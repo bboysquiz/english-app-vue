@@ -1,10 +1,5 @@
-
-
 <template>
   <div class="main">
-     
-      
-  
       <router-view></router-view>
       <footer class="footer">
         <router-link class="link" :to="{ name: 'main' }">

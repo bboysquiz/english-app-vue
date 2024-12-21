@@ -25,12 +25,20 @@ const translationValue = ref('')
 
 const deletePair = async (id) => {
     await axios
+<<<<<<< HEAD
         .delete(`/api/dictionary/${id}`)
+=======
+        .delete(`https://english-iyve3zm8u-nikitas-projects-d648fed6.vercel.app/api/dictionary/${id}`)
+>>>>>>> 0568b897030868112482bbfd11c6393ba4abd025
         .then((res) => {
             console.log(res)
         })
     await axios
+<<<<<<< HEAD
         .get('/api/dictionary/')
+=======
+        .get('https://english-iyve3zm8u-nikitas-projects-d648fed6.vercel.app/api/dictionary/')
+>>>>>>> 0568b897030868112482bbfd11c6393ba4abd025
         .then((res) => {
             dictionary.value = res.data
         })
@@ -43,7 +51,11 @@ const addPair = async () => {
     const word = wordValue.value.trim().toLowerCase();
     const translation = translationValue.value.trim().toLowerCase();
     if (word !== '' && translation !== '') {
+<<<<<<< HEAD
         await axios.post(`/api/dictionary`, {
+=======
+        await axios.post(`https://english-iyve3zm8u-nikitas-projects-d648fed6.vercel.app/api/dictionary`, {
+>>>>>>> 0568b897030868112482bbfd11c6393ba4abd025
             word: word,
             translation: translation
         })
@@ -51,7 +63,11 @@ const addPair = async () => {
                 console.log(res)
             })
         await axios
+<<<<<<< HEAD
             .get('/api/dictionary/')
+=======
+            .get('https://english-iyve3zm8u-nikitas-projects-d648fed6.vercel.app/api/dictionary/')
+>>>>>>> 0568b897030868112482bbfd11c6393ba4abd025
             .then((res) => {
                 console.log(res)
                 dictionary.value.push({ word: word, translation: translation })
@@ -65,7 +81,11 @@ const addPair = async () => {
 }
 onMounted(() => {
     axios
+<<<<<<< HEAD
         .get('/api/dictionary/')
+=======
+        .get('https://english-iyve3zm8u-nikitas-projects-d648fed6.vercel.app/api/dictionary/')
+>>>>>>> 0568b897030868112482bbfd11c6393ba4abd025
         .then((res) => {
             dictionary.value = res.data
         })
