@@ -48,7 +48,7 @@ const nextWord = () => {
 }
 const fetchWord = () => {
     axios
-        .get(`http://localhost:3000/api/dictionary/random`)
+        .get(`/api/dictionary/random`)
         .then((res) => {
             if (res.data && res.data.word) {
                 word.value = res.data.word;
@@ -61,21 +61,21 @@ const fetchWord = () => {
 };
 const fetchStats = () => {
     axios
-        .get(`http://localhost:3000/api/users/points`)
+        .get(`/api/users/points`)
         .then((res) => {
             if(res) {
                 points.value = res.data.points
             }
         })
     axios
-        .get(`http://localhost:3000/api/users/correct_words`)
+        .get(`/api/users/correct_words`)
         .then((res) => {
             if(res) {
                 correctWords.value = res.data.correct_words
             }
         })
     axios
-        .get(`http://localhost:3000/api/users/incorrect_words`)
+        .get(`/api/users/incorrect_words`)
         .then((res) => {
             if(res) {
                 incorrectWords.value = res.data.incorrect_words
@@ -92,7 +92,7 @@ const checkTranslation = async () => {
         correctWords.value += 1
         points.value += 1
         axios
-            .put(`http://localhost:3000/api/users/points`, {
+            .put(`/api/users/points`, {
                 username: 'Squiz',
                 points: points.value,
             })
@@ -100,7 +100,7 @@ const checkTranslation = async () => {
                 fetchStats();
             })
         axios
-            .put(`http://localhost:3000/api/users/correct_words`, {
+            .put(`/api/users/correct_words`, {
                 username: 'Squiz',
                 correctWords: correctWords.value,
             })
@@ -113,7 +113,7 @@ const checkTranslation = async () => {
         incorrectWords.value += 1
         points.value -= 1
         axios
-            .put(`http://localhost:3000/api/users/points`, {
+            .put(`/api/users/points`, {
                 username: 'Squiz',
                 points: points.value,
             })
@@ -121,7 +121,7 @@ const checkTranslation = async () => {
                 fetchStats();
             })
         axios
-            .put(`http://localhost:3000/api/users/incorrect_words`, {
+            .put(`/api/users/incorrect_words`, {
                 username: 'Squiz',
                 incorrectWords: incorrectWords.value,
             })

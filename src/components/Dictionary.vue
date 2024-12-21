@@ -25,12 +25,12 @@ const translationValue = ref('')
 
 const deletePair = async (id) => {
     await axios
-        .delete(`http://localhost:3000/api/dictionary/${id}`)
+        .delete(`/api/dictionary/${id}`)
         .then((res) => {
             console.log(res)
         })
     await axios
-        .get('http://localhost:3000/api/dictionary/')
+        .get('/api/dictionary/')
         .then((res) => {
             dictionary.value = res.data
         })
@@ -43,7 +43,7 @@ const addPair = async () => {
     const word = wordValue.value.trim().toLowerCase();
     const translation = translationValue.value.trim().toLowerCase();
     if (word !== '' && translation !== '') {
-        await axios.post(`http://localhost:3000/api/dictionary`, {
+        await axios.post(`/api/dictionary`, {
             word: word,
             translation: translation
         })
@@ -51,7 +51,7 @@ const addPair = async () => {
                 console.log(res)
             })
         await axios
-            .get('http://localhost:3000/api/dictionary/')
+            .get('/api/dictionary/')
             .then((res) => {
                 console.log(res)
                 dictionary.value.push({ word: word, translation: translation })
@@ -65,7 +65,7 @@ const addPair = async () => {
 }
 onMounted(() => {
     axios
-        .get('http://localhost:3000/api/dictionary/')
+        .get('/api/dictionary/')
         .then((res) => {
             dictionary.value = res.data
         })
@@ -90,6 +90,7 @@ onMounted(() => {
 }
 .dictionary-ul {
     height: 64.3vh;
+    overflow-y: scroll;
 }
 .word {
     display: flex;
