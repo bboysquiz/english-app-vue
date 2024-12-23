@@ -1,49 +1,54 @@
 
 <template>
     <div class="main-container">
-        <div class="stats">
-            <div class="points">
-                <img src="../assets/star.png" alt="star" class="stats-img points-img">
-                <div class="points-number stats-number">{{ points }}</div>
-            </div>
-            <div class="correct-words">
-                <img src="../assets/correct.png" alt="correct" class="stats-img correct-words-img">
-                <div class="correct-words-number stats-number">{{ correctWords }}</div>
-            </div>
-            <div class="incorrect-words">
-                <img src="../assets/incorrect.png" alt="incorrect" class="stats-img incorrect-words-img">
-                <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
-            </div>
+        <div v-show="loading" class="loader-container">
+            <div class="spinner"></div>
         </div>
-        <div class="word">
-            {{ word }}
-        </div>
-        <div class="word-statistic">
-            <div class="word-rating word-stats">
-                <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
-                <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
+            <div class="stats">
+                <div class="points">
+                    <img src="../assets/star.png" alt="star" class="stats-img points-img">
+                    <div class="points-number stats-number">{{ points }}</div>
+                </div>
+                <div class="correct-words">
+                    <img src="../assets/correct.png" alt="correct" class="stats-img correct-words-img">
+                    <div class="correct-words-number stats-number">{{ correctWords }}</div>
+                </div>
+                <div class="incorrect-words">
+                    <img src="../assets/incorrect.png" alt="incorrect" class="stats-img incorrect-words-img">
+                    <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
+                </div>
             </div>
-            <div class="word-correct word-stats">
-                <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
-                <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
+            <div class="word">
+                {{ word }}
             </div>
-            <div class="word-incorrect word-stats">
-                <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
-                <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+            <div class="word-statistic">
+                <div class="word-rating word-stats">
+                    <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
+                    <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
+                </div>
+                <div class="word-correct word-stats">
+                    <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
+                    <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
+                </div>
+                <div class="word-incorrect word-stats">
+                    <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
+                    <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+                </div>
             </div>
-        </div>
-        <input type="text" class="input" v-model="inputValue" placeholder="Input a translation">
-        <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
-        <div v-else-if="isAccess" class="access">{{ translation }}</div>
-        <div v-else class="incorrect">{{ translation }}</div>
-        
+            <input type="text" class="input" v-model="inputValue" placeholder="Input a translation" ref="translateInput" @keydown.enter="checkTranslation" autofocus>
+            <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
+            <div v-else-if="isAccess" class="access">{{ translation }}</div>
+            <div v-else class="incorrect">{{ translation }}</div>
+            
 
-        <button class="next" @click="nextWord()">Next</button>
+            <button class="next" @click="nextWord()">Next</button>
     </div>
 </template>
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
+
+const loading = ref(false);
 
 const id = ref(-1)
 const word = ref('')
@@ -58,16 +63,21 @@ const points = ref(0);
 const correctWords = ref(0);
 const incorrectWords = ref(0);
 
+const translateInput = ref(null)
+
 const wordRating = ref(0)
 const wordCorrect = ref(0)
 const wordIncorrect = ref(0)
 
 const nextWord = () => {
+    word.value = ''
     fetchWord()
     isAnswered.value = false
     inputValue.value = ''
+    translateInput.value?.focus()
 }
 const fetchWord = () => {
+    loading.value = true;
     const exclude = recentWords.value.join(',');
     axios
         .get(`/api/dictionary/random`, {
@@ -93,6 +103,7 @@ const fetchWord = () => {
         .catch((error) => {
             console.error('Ошибка запроса:', error);
         });
+    loading.value = false;
 };
 const fetchStats = () => {
     axios
@@ -119,7 +130,11 @@ const fetchStats = () => {
 }
 
 const checkTranslation = async () => {
-
+    if (isAnswered.value) {
+        nextWord()
+        return
+    }
+    loading.value = true;
     const input = inputValue.value.trim().toLowerCase();
     
     if (input === translation.value.toLowerCase()) {
@@ -183,6 +198,7 @@ const checkTranslation = async () => {
             })
     }
     isAnswered.value = !isAnswered.value
+    loading.value = false;
 }
 onMounted(() => {
     fetchWord();
@@ -292,5 +308,33 @@ onMounted(() => {
     width: 100%;
     text-align: center;
     color: #fff;
+}
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimming effect */
+    z-index: 99999;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.2);
+    border-top: 8px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
