@@ -18,6 +18,20 @@
         <div class="word">
             {{ word }}
         </div>
+        <div class="word-statistic">
+            <div class="word-rating word-stats">
+                <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
+                <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
+            </div>
+            <div class="word-correct word-stats">
+                <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
+                <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
+            </div>
+            <div class="word-incorrect word-stats">
+                <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
+                <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+            </div>
+        </div>
         <input type="text" class="input" v-model="inputValue" placeholder="Input a translation">
         <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
         <div v-else-if="isAccess" class="access">{{ translation }}</div>
@@ -31,15 +45,22 @@
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 
+const id = ref(-1)
 const word = ref('')
 const translation = ref('')
 const isAnswered = ref(false)
 const inputValue = ref('')
 const isAccess = ref(true)
 
-const points = ref(1);
-const correctWords = ref(2);
-const incorrectWords = ref(3);
+const recentWords = ref([]);
+
+const points = ref(0);
+const correctWords = ref(0);
+const incorrectWords = ref(0);
+
+const wordRating = ref(0)
+const wordCorrect = ref(0)
+const wordIncorrect = ref(0)
 
 const nextWord = () => {
     fetchWord()
@@ -47,12 +68,26 @@ const nextWord = () => {
     inputValue.value = ''
 }
 const fetchWord = () => {
+    const exclude = recentWords.value.join(',');
     axios
-        .get(`/api/dictionary/random`)
+        .get(`/api/dictionary/random`, {
+            params: {
+                exclude,
+            },
+        })
         .then((res) => {
             if (res.data && res.data.word) {
+                id.value = res.data.id
                 word.value = res.data.word;
                 translation.value = res.data.translation;
+                wordRating.value = res.data.rating;
+                wordCorrect.value = res.data.correct_answer;
+                wordIncorrect.value = res.data.incorrect_answer;
+            }
+
+            recentWords.value.push(res.data.word);
+            if (recentWords.value.length > 5) {
+                recentWords.value.shift(); // Удаляем старые записи, оставляя только последние 5
             }
         })
         .catch((error) => {
@@ -91,6 +126,8 @@ const checkTranslation = async () => {
         isAccess.value = true
         correctWords.value += 1
         points.value += 1
+        wordRating.value += 1
+        wordCorrect.value += 1
         axios
             .put(`/api/users/points`, {
                 username: 'Squiz',
@@ -107,11 +144,20 @@ const checkTranslation = async () => {
             .then(() => {
                 fetchStats();
             })
+        axios
+            .put(`/api/dictionary/rating`, {
+                id: id.value, 
+                rating: wordRating.value, 
+                correctPoint: wordCorrect.value, 
+                incorrectPoint: wordIncorrect.value,
+            })
        
-    }else {
+    } else {
         isAccess.value = false
         incorrectWords.value += 1
         points.value -= 1
+        wordRating.value -= 1
+        wordIncorrect.value += 1
         axios
             .put(`/api/users/points`, {
                 username: 'Squiz',
@@ -127,6 +173,13 @@ const checkTranslation = async () => {
             })
             .then(() => {
                 fetchStats();
+            })
+        axios
+            .put(`/api/dictionary/rating`, {
+                id: id.value, 
+                rating: wordRating.value, 
+                correctPoint: wordCorrect.value, 
+                incorrectPoint: wordIncorrect.value,
             })
     }
     isAnswered.value = !isAnswered.value
@@ -223,5 +276,21 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     width: 300px;
+}
+.word-statistic {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+.word-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.word-stats-text {
+    width: 100%;
+    text-align: center;
+    color: #fff;
 }
 </style>
