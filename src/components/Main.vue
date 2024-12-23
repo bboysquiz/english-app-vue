@@ -52,6 +52,8 @@ const isAnswered = ref(false)
 const inputValue = ref('')
 const isAccess = ref(true)
 
+const requestCounter = ref(0)
+
 const recentWords = ref([]);
 
 const points = ref(0);
@@ -68,9 +70,15 @@ const nextWord = () => {
     inputValue.value = ''
 }
 const fetchWord = () => {
+    requestCounter.value++
     const exclude = recentWords.value.join(',');
+
+    const url =
+        requestCounter % 15 === 0
+            ? `/api/dictionary/random` // Запрос без исключений для случайного слова
+            : `/api/dictionary/random?exclude=${exclude}`;
     axios
-        .get(`/api/dictionary/random`, {
+        .get(url, {
             params: {
                 exclude,
             },
