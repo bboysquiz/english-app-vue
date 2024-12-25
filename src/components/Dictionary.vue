@@ -1,10 +1,37 @@
-
 <template>
     <div class="dictionary-container">
         <ul class="dictionary-ul">
             <li class="dictionary-li" v-for="item in dictionary" :key="item.id">
-                <div class="word">{{ item.word }}</div>
-                <div class="translation">{{ item.translation }}</div>
+                <div v-if="!item.isEditing" class="word">{{ item.word }}</div>
+                <input
+                    v-else
+                    class="edit-input"
+                    v-model="item.word"
+                    placeholder="Edit word"
+                />
+
+                <div v-if="!item.isEditing" class="translation">{{ item.translation }}</div>
+                <input
+                    v-else
+                    class="edit-input"
+                    v-model="item.translation"
+                    placeholder="Edit translation"
+                />
+
+                <button
+                    v-if="!item.isEditing"
+                    class="edit-button"
+                    @click="item.isEditing = true"
+                >
+                    Edit
+                </button>
+                <button
+                    v-if="item.isEditing"
+                    class="save-button"
+                    @click="saveEdit(item)"
+                >
+                    Save
+                </button>
                 <button class="delete-button" @click="deletePair(item.id)">Delete</button>
             </li>
         </ul>
@@ -24,57 +51,67 @@ const wordValue = ref('')
 const translationValue = ref('')
 
 const deletePair = async (id) => {
-    await axios
-        .delete(`/api/dictionary/${id}`)
-        .then((res) => {
-            console.log(res)
-        })
-    await axios
-        .get('/api/dictionary/')
-        .then((res) => {
-            dictionary.value = res.data
-        })
-        .catch((error) => {
-            console.error('Ошибка при получении количества пар:', error);
-        });
-}
+    try {
+        await axios.delete(`/api/dictionary/${id}`);
+        dictionary.value = dictionary.value.filter(item => item.id !== id);
+    } catch (error) {
+        console.error('Error deleting pair:', error);
+    }
+};
 
 const addPair = async () => {
     const word = wordValue.value.trim().toLowerCase();
     const translation = translationValue.value.trim().toLowerCase();
-    if (word !== '' && translation !== '') {
-        await axios.post(`/api/dictionary`, {
-            word: word,
-            translation: translation
-        })
-            .then((res) => {
-                console.log(res)
-            })
-        await axios
-            .get('/api/dictionary/')
-            .then((res) => {
-                console.log(res)
-                dictionary.value.push({ word: word, translation: translation })
-                wordValue.value = ''
-                translationValue.value = ''
-            })
-            .catch((error) => {
-                console.error('Ошибка при получении количества пар:', error);
-            });
+    if (word && translation) {
+        try {
+            const response = await axios.post(`/api/dictionary`, { word, translation });
+            dictionary.value.push({ ...response.data, isEditing: false });
+            wordValue.value = '';
+            translationValue.value = '';
+        } catch (error) {
+            console.error('Error adding pair:', error);
+        }
     }
-}
-onMounted(() => {
-    axios
-        .get('/api/dictionary/')
-        .then((res) => {
-            dictionary.value = res.data
-        })
-        .catch((error) => {
-            console.error('Ошибка при получении количества пар:', error);
+};
+
+const saveEdit = async (item) => {
+    try {
+        await axios.put(`/api/dictionary/pair`, {
+            id: item.id,
+            word: item.word.trim().toLowerCase(),
+            translation: item.translation.trim().toLowerCase(),
         });
-})
+        item.isEditing = false; // Exit edit mode after saving
+    } catch (error) {
+        console.error('Error saving edit:', error);
+    }
+};
+
+onMounted(async () => {
+    try {
+        const response = await axios.get('/api/dictionary/');
+        dictionary.value = response.data.map(item => ({ ...item, isEditing: false }));
+    } catch (error) {
+        console.error('Error fetching dictionary:', error);
+    }
+});
 </script>
 <style scoped>
+.edit-input {
+    width: 40%;
+    height: 20px;
+    margin-right: 5px;
+    font-size: 14px;
+    padding: 5px;
+}
+.edit-button, .save-button {
+    height: 20px;
+    background-color: blue;
+    color: white;
+    font-size: 10px;
+    border: none;
+    cursor: pointer;
+}
 .dictionary-container {
     width: 480px;
     padding-right: 23px;
