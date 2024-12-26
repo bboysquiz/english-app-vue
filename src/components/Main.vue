@@ -131,75 +131,69 @@ const fetchStats = () => {
 
 const checkTranslation = async () => {
     if (isAnswered.value) {
-        nextWord()
-        return
+        nextWord();
+        return;
     }
     loading.value = true;
-    const input = inputValue.value.trim().toLowerCase();
-    
-    if (input === translation.value.toLowerCase()) {
-        isAccess.value = true
-        correctWords.value += 1
-        points.value += 1
-        wordRating.value += 1
-        wordCorrect.value += 1
-        axios
-            .put(`/api/users/points`, {
-                username: 'Squiz',
-                points: points.value,
-            })
-            .then(() => {
-                fetchStats();
-            })
-        axios
-            .put(`/api/users/correct_words`, {
-                username: 'Squiz',
-                correctWords: correctWords.value,
-            })
-            .then(() => {
-                fetchStats();
-            })
-        axios
-            .put(`/api/dictionary/rating`, {
-                id: id.value, 
-                rating: wordRating.value, 
-                correctPoint: wordCorrect.value, 
-                incorrectPoint: wordIncorrect.value,
-            })
-       
+
+    // Подготовка строк
+    const input = inputValue.value.trim().toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/й/g, 'и');
+
+    const preparedTranslation = translation.value.trim().toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/й/g, 'и');
+
+    // Сравнение
+    if (input === preparedTranslation) {
+        isAccess.value = true;
+        correctWords.value += 1;
+        points.value += 1;
+        wordRating.value += 1;
+        wordCorrect.value += 1;
+
+        await axios.put(`/api/users/points`, {
+            username: 'Squiz',
+            points: points.value,
+        });
+        await axios.put(`/api/users/correct_words`, {
+            username: 'Squiz',
+            correctWords: correctWords.value,
+        });
+        await axios.put(`/api/dictionary/rating`, {
+            id: id.value,
+            rating: wordRating.value,
+            correctPoint: wordCorrect.value,
+            incorrectPoint: wordIncorrect.value,
+        });
     } else {
-        isAccess.value = false
-        incorrectWords.value += 1
-        points.value -= 1
-        wordRating.value -= 1
-        wordIncorrect.value += 1
-        axios
-            .put(`/api/users/points`, {
-                username: 'Squiz',
-                points: points.value,
-            })
-            .then(() => {
-                fetchStats();
-            })
-        axios
-            .put(`/api/users/incorrect_words`, {
-                username: 'Squiz',
-                incorrectWords: incorrectWords.value,
-            })
-            .then(() => {
-                fetchStats();
-            })
-        axios
-            .put(`/api/dictionary/rating`, {
-                id: id.value, 
-                rating: wordRating.value, 
-                correctPoint: wordCorrect.value, 
-                incorrectPoint: wordIncorrect.value,
-            })
+        isAccess.value = false;
+        incorrectWords.value += 1;
+        points.value -= 1;
+        wordRating.value -= 1;
+        wordIncorrect.value += 1;
+
+        await axios.put(`/api/users/points`, {
+            username: 'Squiz',
+            points: points.value,
+        });
+        await axios.put(`/api/users/incorrect_words`, {
+            username: 'Squiz',
+            incorrectWords: incorrectWords.value,
+        });
+        await axios.put(`/api/dictionary/rating`, {
+            id: id.value,
+            rating: wordRating.value,
+            correctPoint: wordCorrect.value,
+            incorrectPoint: wordIncorrect.value,
+        });
     }
-    isAnswered.value = !isAnswered.value
+
+    isAnswered.value = !isAnswered.value;
     loading.value = false;
-}
+};
+
 onMounted(() => {
     fetchWord();
     fetchStats();

@@ -1,7 +1,15 @@
 <template>
     <div class="dictionary-container">
+        <div class="search-wrapper">
+            <input
+                type="text"
+                class="search-input"
+                v-model="searchQuery"
+                placeholder="Search words..."
+            />
+        </div>
         <ul class="dictionary-ul">
-            <li class="dictionary-li" v-for="item in dictionary" :key="item.id">
+            <li class="dictionary-li" v-for="item in filteredDictionary" :key="item.id">
                 <div v-if="!item.isEditing" class="word">{{ item.word }}</div>
                 <input
                     v-else
@@ -44,11 +52,12 @@
 </template>
 <script setup>
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const dictionary = ref([])
 const wordValue = ref('')
 const translationValue = ref('')
+const searchQuery = ref('');
 
 const deletePair = async (id) => {
     try {
@@ -86,6 +95,14 @@ const saveEdit = async (item) => {
         console.error('Error saving edit:', error);
     }
 };
+
+const filteredDictionary = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase();
+    if (!query) return dictionary.value; // Если поле поиска пустое, вернуть весь список
+    return dictionary.value.filter(item =>
+        item.word.toLowerCase().includes(query) || item.translation.toLowerCase().includes(query)
+    );
+});
 
 onMounted(async () => {
     try {
@@ -185,5 +202,19 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+.search-wrapper {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    width: 100%;
+    height: 30px;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 </style>
