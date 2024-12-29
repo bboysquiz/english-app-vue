@@ -4,6 +4,7 @@
         <div v-show="loading" class="loader-container">
             <div class="spinner"></div>
         </div>
+            <button class="main_logout-button">logout</button>
             <div class="stats">
                 <div class="points">
                     <img src="../assets/star.png" alt="star" class="stats-img points-img">

@@ -1,5 +1,6 @@
 <template>
     <div class="dictionary-container">
+        <button class="main_logout-button">logout</button>
         <div class="search-wrapper">
             <input
                 type="text"
