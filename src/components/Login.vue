@@ -35,7 +35,7 @@ const handleLogin = async () => {
             alert('Login successful!');
             router.push('/'); // Перенаправление на главную страницу
         } else {
-            console.log(response.data.message);
+            console.log(response);
         }
     } catch (error) {
         console.error('Login failed:', error.response?.data?.message || error.message);
