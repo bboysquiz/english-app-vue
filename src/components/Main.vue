@@ -4,7 +4,6 @@
         <div v-show="loading" class="loader-container">
             <div class="spinner"></div>
         </div>
-            <button class="main_logout-button">logout</button>
             <div class="stats">
                 <div class="points">
                     <img src="../assets/star.png" alt="star" class="stats-img points-img">
@@ -48,6 +47,7 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
+import router from '../router';
 
 const loading = ref(false);
 
@@ -70,22 +70,34 @@ const wordRating = ref(0)
 const wordCorrect = ref(0)
 const wordIncorrect = ref(0)
 
-const nextWord = () => {
+const username = ref('');
+
+const fetchUser = async () => {
+    try {
+        const res = await axios.get(`/api/users/me`, { withCredentials: true });
+        username.value = res.data.user.username;
+        console.log('Current user:', res.data.user);
+    } catch (error) {
+        console.log(error.response.status)
+        if (error.response.status === 401) {
+            router.push('/login')
+        }
+        console.error('Error fetching user:', error.response?.data?.message || error.message);
+    }
+};
+
+const nextWord = async () => {
     word.value = ''
-    fetchWord()
+    await fetchWord()
     isAnswered.value = false
     inputValue.value = ''
     translateInput.value?.focus()
 }
-const fetchWord = () => {
+const fetchWord = async () => {
     loading.value = true;
     const exclude = recentWords.value.join(',');
-    axios
-        .get(`/api/dictionary/random`, {
-            params: {
-                exclude,
-            },
-        })
+    await axios
+        .get(`/api/dictionary/random`, { params: { exclude }, withCredentials: true })
         .then((res) => {
             if (res.data && res.data.word) {
                 id.value = res.data.id
@@ -106,29 +118,30 @@ const fetchWord = () => {
         });
     loading.value = false;
 };
-const fetchStats = () => {
-    axios
-        .get(`/api/users/points`)
-        .then((res) => {
-            if(res) {
-                points.value = res.data.points
-            }
-        })
-    axios
-        .get(`/api/users/correct_words`)
-        .then((res) => {
-            if(res) {
-                correctWords.value = res.data.correct_words
-            }
-        })
-    axios
-        .get(`/api/users/incorrect_words`)
-        .then((res) => {
-            if(res) {
-                incorrectWords.value = res.data.incorrect_words
-            }
-        })
-}
+const fetchStats = async () => {
+    try {
+        console.log(username.value); // Убедитесь, что здесь выводится корректное значение
+        const pointsResponse = await axios.get(`/api/users/points`, {
+            params: { username: username.value }, // Передаём имя пользователя в query параметрах
+            withCredentials: true, // Добавляем cookies
+        });
+        points.value = pointsResponse.data.points;
+
+        const correctWordsResponse = await axios.get(`/api/users/correct_words`, {
+            params: { username: username.value },
+            withCredentials: true,
+        });
+        correctWords.value = correctWordsResponse.data.correct_words;
+
+        const incorrectWordsResponse = await axios.get(`/api/users/incorrect_words`, {
+            params: { username: username.value },
+            withCredentials: true,
+        });
+        incorrectWords.value = incorrectWordsResponse.data.incorrect_words;
+    } catch (error) {
+        console.error('Error fetching stats:', error.response?.data?.message || error.message);
+    }
+};
 
 const checkTranslation = async () => {
     if (isAnswered.value) {
@@ -155,11 +168,11 @@ const checkTranslation = async () => {
         wordCorrect.value += 1;
 
         await axios.put(`/api/users/points`, {
-            username: 'Squiz',
+            username: username.value,
             points: points.value,
         });
         await axios.put(`/api/users/correct_words`, {
-            username: 'Squiz',
+            username: username.value,
             correctWords: correctWords.value,
         });
         await axios.put(`/api/dictionary/rating`, {
@@ -176,11 +189,11 @@ const checkTranslation = async () => {
         wordIncorrect.value += 1;
 
         await axios.put(`/api/users/points`, {
-            username: 'Squiz',
+            username: username.value,
             points: points.value,
         });
         await axios.put(`/api/users/incorrect_words`, {
-            username: 'Squiz',
+            username: username.value,
             incorrectWords: incorrectWords.value,
         });
         await axios.put(`/api/dictionary/rating`, {
@@ -195,24 +208,25 @@ const checkTranslation = async () => {
     loading.value = false;
 };
 
-onMounted(() => {
-    fetchWord();
-    fetchStats();
+onMounted(async () => {
+    await fetchUser()
+    await fetchWord();
+    await fetchStats();
 })
 </script>
 <style scoped>
 .main-container {
-    width: 480px;
-    padding-right: 23px;
-    padding-left: 23px;
-    padding-top: 10%;
+    width: 100vw;
+    padding-right: 3vw;
+    padding-left: 3vw;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    padding-top: 7vh;
+    box-sizing: border-box;
 }
 .incorrect {
     background-color: red;
-    height: 82px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -225,9 +239,12 @@ onMounted(() => {
     justify-content: center;
     display: flex;
     color: #D0D6EB;
-    height: 34vh;
     align-items: center;
     font-size: 34px;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    margin-top: 12vh;
+    margin-bottom: 12vh;
 }
 .access {
     width: 100%;
@@ -235,50 +252,47 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     background-color: green;
-    height: 7.8vh;
     border-radius: 7px;
     font-size: 20px;
 }
 .next {
     width: 100%;
-    margin-top: 30px;
     display: flex;
     justify-content: center;
     font-size: 20px;
     background-color: #D0D6EB;
     color: #000;
-    height: 7.8vh;
     align-items: center;
+    margin-top: 2vh;
+    height: 7vh;
 }
 .button {
     width: 100%;
-    height: 7.8vh;
-    margin-top: 11px;
     display: flex;
     justify-content: center;
     font-size: 28px;
     background-color: #2D33DB;
     color: #fff;
     align-items: center;
+    margin-top: 2vh;
+    height: 7vh;
 }
 .input {
     width: 100%;
-    height: 7.8vh;
     border-radius: 30px;
     background: linear-gradient(rgba(3, 3, 31, 1), rgba(6, 6, 37, 0.7), rgba(9, 9, 44, 0));
     border: none;
     outline: none;
     padding-left: 20px;
     color: #fff;
-    margin-top: 5vh;
     font-size: 20px;
+    height: 10vh;
 }
 .input::placeholder {
     color: #c1c1c1;
 }
 .stats-img {
     width: 25px;
-    height: 25px;
 }
 .stats-number {
     color: #fff;
@@ -286,13 +300,14 @@ onMounted(() => {
 .stats {
     display: flex;
     justify-content: space-between;
-    width: 300px;
+    width: 35vw;
 }
 .word-statistic {
     width: 100%;
     display: flex;
     justify-content: center;
     gap: 30px;
+    margin-bottom: 3vh;
 }
 .word-stats {
     display: flex;
@@ -308,7 +323,6 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     width: 100vw;
     background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimming effect */
     z-index: 99999;
@@ -321,7 +335,6 @@ onMounted(() => {
     border-top: 8px solid #fff;
     border-radius: 50%;
     width: 50px;
-    height: 50px;
     animation: spin 1s linear infinite;
 }
 @keyframes spin {

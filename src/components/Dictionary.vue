@@ -1,6 +1,6 @@
 <template>
     <div class="dictionary-container">
-        <button class="main_logout-button">logout</button>
+
         <div class="search-wrapper">
             <input
                 type="text"
@@ -54,11 +54,28 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref, computed } from 'vue'
+import router from '../router';
 
 const dictionary = ref([])
 const wordValue = ref('')
 const translationValue = ref('')
 const searchQuery = ref('');
+
+const username = ref('');
+
+const fetchUser = async () => {
+    try {
+        const res = await axios.get(`/api/users/me`, { withCredentials: true });
+        username.value = res.data.username;
+        console.log('Current user:', res.data.user);
+    } catch (error) {
+        console.log(error.response.status)
+        if (error.response.status === 401) {
+            router.push('/login')
+        }
+        console.error('Error fetching user:', error.response?.data?.message || error.message);
+    }
+};
 
 const deletePair = async (id) => {
     try {
@@ -106,6 +123,7 @@ const filteredDictionary = computed(() => {
 });
 
 onMounted(async () => {
+    await fetchUser()
     try {
         const response = await axios.get('/api/dictionary/');
         dictionary.value = response.data.map(item => ({ ...item, isEditing: false }));
@@ -117,13 +135,10 @@ onMounted(async () => {
 <style scoped>
 .edit-input {
     width: 40%;
-    height: 20px;
     margin-right: 5px;
     font-size: 14px;
-    padding: 5px;
 }
 .edit-button, .save-button {
-    height: 20px;
     background-color: blue;
     color: white;
     font-size: 10px;
@@ -131,10 +146,13 @@ onMounted(async () => {
     cursor: pointer;
 }
 .dictionary-container {
-    width: 480px;
-    padding-right: 23px;
-    padding-left: 23px;
-    padding-top: 5vh;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 0vh 3vw;
+    height: 61vh;
+    margin-top: 7vh;
+    overflow-y: auto;
+    margin-bottom: 15vh;
 }
 
 .dictionary-li {
@@ -144,7 +162,6 @@ onMounted(async () => {
     width: 100%;
 }
 .dictionary-ul {
-    height: 64.3vh;
     overflow-y: scroll;
 }
 .word {
@@ -161,7 +178,6 @@ onMounted(async () => {
     width: 50%;
 }
 .delete-button {
-    height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -170,7 +186,6 @@ onMounted(async () => {
 }
 .input-word {
     width: 38%;
-    height: 7.8vh;
     border-radius: 20px;
     background: linear-gradient(rgb(5, 5, 72), rgba(7, 7, 88, 0.7), rgba(8, 8, 255, 0));
     border: 1px solid #2e2e2e;
@@ -178,10 +193,10 @@ onMounted(async () => {
     padding-left: 20px;
     color: #fff;
     font-size: 20px;
+    height: 7vh;
 }
 .input-translation {
     width: 38%;
-    height: 7.8vh;
     border-radius: 20px;
     background: linear-gradient(rgb(5, 5, 72), rgba(7, 7, 88, 0.7), rgba(8, 8, 255, 0));
     border: 1px solid #2e2e2e;
@@ -189,31 +204,38 @@ onMounted(async () => {
     padding-left: 20px;
     color: #fff;
     font-size: 20px;
+    height: 7vh;
 }
 .button {
-    height: 7.8vh;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 10px;
     border: none;
     outline: none;
+    width: 10%;
+    height: 7vh;
 }
 .dictionary_new-word-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed;
+    bottom: 15vh;
+    width: 94%;
 }
 .search-wrapper {
-    margin-bottom: 10px;
     display: flex;
     justify-content: center;
+    position: fixed;
+    top: 7vh;
+    left: 7vw;
+    width: 90%;
+    height: 4vh;
 }
 
 .search-input {
     width: 100%;
-    height: 30px;
-    padding: 5px 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
