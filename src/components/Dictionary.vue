@@ -62,15 +62,16 @@ const translationValue = ref('')
 const searchQuery = ref('');
 
 const username = ref('');
+const userId = ref('')
 
 const fetchUser = async () => {
     try {
         const res = await axios.get(`/api/users/me`, { withCredentials: true });
         username.value = res.data.username;
-        console.log('Current user:', res.data.user);
+        userId.value = res.data.user.userId;
     } catch (error) {
         console.log(error.response.status)
-        if (error.response.status === 401) {
+        if (error.response.status === 401 || error.response.status === 403) {
             router.push('/login')
         }
         console.error('Error fetching user:', error.response?.data?.message || error.message);
@@ -79,7 +80,12 @@ const fetchUser = async () => {
 
 const deletePair = async (id) => {
     try {
-        await axios.delete(`/api/dictionary/${id}`);
+        await axios.delete(`/api/dictionary/${id}`, {
+            params: {
+                userId: userId.value, 
+            },
+            withCredentials: true,
+        });
         dictionary.value = dictionary.value.filter(item => item.id !== id);
     } catch (error) {
         console.error('Error deleting pair:', error);
@@ -89,9 +95,9 @@ const deletePair = async (id) => {
 const addPair = async () => {
     const word = wordValue.value.trim().toLowerCase();
     const translation = translationValue.value.trim().toLowerCase();
-    if (word && translation) {
+    if ( userId.value && word && translation) {
         try {
-            const response = await axios.post(`/api/dictionary`, { word, translation });
+            const response = await axios.post(`/api/dictionary`, { userId: userId.value, word, translation });
             dictionary.value.push({ ...response.data, isEditing: false });
             wordValue.value = '';
             translationValue.value = '';
@@ -107,6 +113,7 @@ const saveEdit = async (item) => {
             id: item.id,
             word: item.word.trim().toLowerCase(),
             translation: item.translation.trim().toLowerCase(),
+            userId: userId.value,
         });
         item.isEditing = false; // Exit edit mode after saving
     } catch (error) {
@@ -125,8 +132,13 @@ const filteredDictionary = computed(() => {
 onMounted(async () => {
     await fetchUser()
     try {
-        const response = await axios.get('/api/dictionary/');
-        dictionary.value = response.data.map(item => ({ ...item, isEditing: false }));
+        const response = await axios.get('/api/dictionary/', {
+            params: {
+                userId: userId.value,
+            }
+        });
+        console.log(response)
+        dictionary.value = response.data.data.map(item => ({ ...item, isEditing: false }));
     } catch (error) {
         console.error('Error fetching dictionary:', error);
     }

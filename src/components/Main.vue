@@ -71,15 +71,20 @@ const wordCorrect = ref(0)
 const wordIncorrect = ref(0)
 
 const username = ref('');
+const userId = ref('')
 
 const fetchUser = async () => {
     try {
         const res = await axios.get(`/api/users/me`, { withCredentials: true });
         username.value = res.data.user.username;
+        userId.value = res.data.user.userId;
         console.log('Current user:', res.data.user);
     } catch (error) {
         console.log(error.response.status)
         if (error.response.status === 401) {
+            router.push('/login')
+        }
+        if (error.response.status === 403) {
             router.push('/login')
         }
         console.error('Error fetching user:', error.response?.data?.message || error.message);
@@ -97,7 +102,13 @@ const fetchWord = async () => {
     loading.value = true;
     const exclude = recentWords.value.join(',');
     await axios
-        .get(`/api/dictionary/random`, { params: { exclude }, withCredentials: true })
+        .get(`/api/dictionary/random`, { 
+            params: { 
+                userId: userId.value, 
+                exclude 
+            }, 
+            withCredentials: true, 
+        })
         .then((res) => {
             if (res.data && res.data.word) {
                 id.value = res.data.id
@@ -122,19 +133,19 @@ const fetchStats = async () => {
     try {
         console.log(username.value); // Убедитесь, что здесь выводится корректное значение
         const pointsResponse = await axios.get(`/api/users/points`, {
-            params: { username: username.value }, // Передаём имя пользователя в query параметрах
+            params: { userId: userId.value }, // Передаём имя пользователя в query параметрах
             withCredentials: true, // Добавляем cookies
         });
         points.value = pointsResponse.data.points;
 
         const correctWordsResponse = await axios.get(`/api/users/correct_words`, {
-            params: { username: username.value },
+            params: { userId: userId.value },
             withCredentials: true,
         });
         correctWords.value = correctWordsResponse.data.correct_words;
 
         const incorrectWordsResponse = await axios.get(`/api/users/incorrect_words`, {
-            params: { username: username.value },
+            params: { userId: userId.value },
             withCredentials: true,
         });
         incorrectWords.value = incorrectWordsResponse.data.incorrect_words;
@@ -168,11 +179,11 @@ const checkTranslation = async () => {
         wordCorrect.value += 1;
 
         await axios.put(`/api/users/points`, {
-            username: username.value,
+            userId: userId.value,
             points: points.value,
         });
         await axios.put(`/api/users/correct_words`, {
-            username: username.value,
+            userId: userId.value,
             correctWords: correctWords.value,
         });
         await axios.put(`/api/dictionary/rating`, {
@@ -180,6 +191,7 @@ const checkTranslation = async () => {
             rating: wordRating.value,
             correctPoint: wordCorrect.value,
             incorrectPoint: wordIncorrect.value,
+            userId: userId.value,
         });
     } else {
         isAccess.value = false;
@@ -189,11 +201,11 @@ const checkTranslation = async () => {
         wordIncorrect.value += 1;
 
         await axios.put(`/api/users/points`, {
-            username: username.value,
+            userId: userId.value,
             points: points.value,
         });
         await axios.put(`/api/users/incorrect_words`, {
-            username: username.value,
+            userId: userId.value,
             incorrectWords: incorrectWords.value,
         });
         await axios.put(`/api/dictionary/rating`, {
@@ -201,6 +213,7 @@ const checkTranslation = async () => {
             rating: wordRating.value,
             correctPoint: wordCorrect.value,
             incorrectPoint: wordIncorrect.value,
+            userId: userId.value,
         });
     }
 

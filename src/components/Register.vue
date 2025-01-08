@@ -32,11 +32,10 @@
       })
   
       if (response.data) {
-        alert('Registration successful! Please log in.')
         router.push('/login') // Перенаправление на страницу логина
       }
     } catch (error) {
-      alert('Registration failed: ' + error.response?.data?.message || error.message)
+        console.log(error)
     }
   }
   </script>

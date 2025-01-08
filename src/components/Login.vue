@@ -32,7 +32,6 @@ const handleLogin = async () => {
         }, { withCredentials: true });
 
         if (response.data.success) {
-            alert('Login successful!');
             router.push('/'); // Перенаправление на главную страницу
         } else {
             console.log(response);
