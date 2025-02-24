@@ -21,7 +21,6 @@ import axios from 'axios';
 
 const logout = async () => {
   try {
-    // Отправка запроса на сервер для выхода
     await axios.post('/api/logout', {}, { withCredentials: true });
 
     // Очистка локальных данных
