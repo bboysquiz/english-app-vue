@@ -1,53 +1,67 @@
-
 <template>
     <div class="main-container">
         <div v-show="loading" class="loader-container">
             <div class="spinner"></div>
         </div>
-            <div class="stats">
-                <div class="points">
-                    <img src="../assets/star.png" alt="star" class="stats-img points-img">
-                    <div class="points-number stats-number">{{ points }}</div>
+        <div class="language-switcher-container">
+            <div class="switcher">
+                <div class="switcher-option" :class="{ active: currentLanguage === 'ru' }"
+                    @click="switchLanguage('ru')">
+                    RU
                 </div>
-                <div class="correct-words">
-                    <img src="../assets/correct.png" alt="correct" class="stats-img correct-words-img">
-                    <div class="correct-words-number stats-number">{{ correctWords }}</div>
+                <div class="switcher-option" :class="{ active: currentLanguage === 'en' }"
+                    @click="switchLanguage('en')">
+                    EN
                 </div>
-                <div class="incorrect-words">
-                    <img src="../assets/incorrect.png" alt="incorrect" class="stats-img incorrect-words-img">
-                    <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
-                </div>
+                <div class="switcher-indicator" ref="indicator"></div>
             </div>
-            <div class="word">
-                {{ word }}
+        </div>
+        <div class="stats">
+            <div class="points">
+                <img src="../assets/star.png" alt="star" class="stats-img points-img">
+                <div class="points-number stats-number">{{ points }}</div>
             </div>
-            <div class="word-statistic">
-                <div class="word-rating word-stats">
-                    <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
-                    <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
-                </div>
-                <div class="word-correct word-stats">
-                    <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
-                    <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
-                </div>
-                <div class="word-incorrect word-stats">
-                    <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
-                    <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
-                </div>
+            <div class="correct-words">
+                <img src="../assets/correct.png" alt="correct" class="stats-img correct-words-img">
+                <div class="correct-words-number stats-number">{{ correctWords }}</div>
             </div>
-            <input type="text" class="input" v-model="inputValue" placeholder="Input a translation" ref="translateInput" @keydown.enter="checkTranslation" autofocus>
-            <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
-            <div v-else-if="isAccess" class="access">{{ translation }}</div>
-            <div v-else class="incorrect">{{ translation }}</div>
-            
+            <div class="incorrect-words">
+                <img src="../assets/incorrect.png" alt="incorrect" class="stats-img incorrect-words-img">
+                <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
+            </div>
+        </div>
+        <div class="word">
+            {{ displayedWord }}
+        </div>
+        <div class="word-statistic">
+            <div class="word-rating word-stats">
+                <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
+                <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
+            </div>
+            <div class="word-correct word-stats">
+                <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
+                <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
+            </div>
+            <div class="word-incorrect word-stats">
+                <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
+                <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+            </div>
+        </div>
+        <input type="text" class="input" v-model="inputValue" placeholder="Input a translation" ref="translateInput"
+            @keydown.enter="checkTranslation" autofocus>
+        <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
+        <div v-else-if="isAccess" class="access">{{ correctAnswer }}</div>
+        <div v-else class="incorrect">{{ correctAnswer }}</div>
 
-            <button class="next" @click="nextWord()">Next</button>
+
+        <button class="next" @click="nextWord()">Next</button>
     </div>
 </template>
 <script setup>
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import router from '../router';
+import gsap from 'gsap';
 
 const loading = ref(false);
 
@@ -66,12 +80,36 @@ const incorrectWords = ref(0);
 
 const translateInput = ref(null)
 
+const currentLanguage = ref('ru');
+const indicator = ref(null);
+
 const wordRating = ref(0)
 const wordCorrect = ref(0)
 const wordIncorrect = ref(0)
 
 const username = ref('');
 const userId = ref('')
+
+// Вычисляемое свойство для отображаемого слова
+const displayedWord = computed(() => {
+  // Если выбран режим en — показываем английское слово,
+  // если ru — показываем русский перевод
+  return currentLanguage.value === 'en' ? word.value : translation.value;
+})
+
+// Вычисляемое свойство для корректного ответа
+const correctAnswer = computed(() => {
+  // Если режим en — ожидается русский ответ (translation),
+  // если ru — ожидается английский (word)
+  return currentLanguage.value === 'en' ? translation.value : word.value;
+})
+
+const switchLanguage = (lang) => {
+  if (lang === currentLanguage.value) return;
+  currentLanguage.value = lang;
+  const targetLeft = lang === 'ru' ? '0%' : '50%';
+  gsap.to(indicator.value, { duration: 0.3, left: targetLeft });
+};
 
 const fetchUser = async () => {
     try {
@@ -102,12 +140,12 @@ const fetchWord = async () => {
     loading.value = true;
     const exclude = recentWords.value.join(',');
     await axios
-        .get(`/api/dictionary/random`, { 
-            params: { 
-                userId: userId.value, 
-                exclude 
-            }, 
-            withCredentials: true, 
+        .get(`/api/dictionary/random`, {
+            params: {
+                userId: userId.value,
+                exclude
+            },
+            withCredentials: true,
         })
         .then((res) => {
             if (res.data && res.data.word) {
@@ -166,12 +204,12 @@ const checkTranslation = async () => {
         .replace(/ё/g, 'е')
         .replace(/й/g, 'и');
 
-    const preparedTranslation = translation.value.trim().toLowerCase()
+    const expected = correctAnswer.value.trim().toLowerCase()
         .replace(/ё/g, 'е')
         .replace(/й/g, 'и');
 
     // Сравнение
-    if (input === preparedTranslation) {
+    if (input === expected) {
         isAccess.value = true;
         correctWords.value += 1;
         points.value += 1;
@@ -225,6 +263,7 @@ onMounted(async () => {
     await fetchUser()
     await fetchWord();
     await fetchStats();
+    gsap.set(indicator.value, { left: '0%' });
 })
 </script>
 <style scoped>
@@ -238,6 +277,40 @@ onMounted(async () => {
     padding-top: 7vh;
     box-sizing: border-box;
 }
+.language-switcher-container {
+    width: 120px;
+    margin-bottom: 20px;
+  }
+  .switcher {
+    position: relative;
+    display: flex;
+    background: #ccc;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .switcher-option {
+    width: 50%;
+    text-align: center;
+    padding: 8px 0;
+    cursor: pointer;
+    z-index: 1;
+    font-weight: bold;
+    color: #000;
+  }
+  .switcher-option.active {
+    color: #fff;
+  }
+  .switcher-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: #2D33DB;
+    border-radius: 20px;
+    z-index: 0;
+  }
+
 .incorrect {
     background-color: red;
     display: flex;
@@ -247,6 +320,7 @@ onMounted(async () => {
     border-radius: 7px;
     font-size: 20px;
 }
+
 .word {
     width: 100%;
     justify-content: center;
@@ -259,6 +333,7 @@ onMounted(async () => {
     margin-top: 12vh;
     margin-bottom: 12vh;
 }
+
 .access {
     width: 100%;
     display: flex;
@@ -268,6 +343,7 @@ onMounted(async () => {
     border-radius: 7px;
     font-size: 20px;
 }
+
 .next {
     width: 100%;
     display: flex;
@@ -279,6 +355,7 @@ onMounted(async () => {
     margin-top: 2vh;
     height: 7vh;
 }
+
 .button {
     width: 100%;
     display: flex;
@@ -290,6 +367,7 @@ onMounted(async () => {
     margin-top: 2vh;
     height: 7vh;
 }
+
 .input {
     width: 100%;
     border-radius: 30px;
@@ -301,20 +379,25 @@ onMounted(async () => {
     font-size: 20px;
     height: 10vh;
 }
+
 .input::placeholder {
     color: #c1c1c1;
 }
+
 .stats-img {
     width: 25px;
 }
+
 .stats-number {
     color: #fff;
 }
+
 .stats {
     display: flex;
     justify-content: space-between;
     width: 35vw;
 }
+
 .word-statistic {
     width: 100%;
     display: flex;
@@ -322,27 +405,32 @@ onMounted(async () => {
     gap: 30px;
     margin-bottom: 3vh;
 }
+
 .word-stats {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
+
 .word-stats-text {
     width: 100%;
     text-align: center;
     color: #fff;
 }
+
 .loader-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100vw;
-    background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimming effect */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Optional: for dimming effect */
     z-index: 99999;
     position: fixed;
     top: 0;
     left: 0;
 }
+
 .spinner {
     border: 8px solid rgba(255, 255, 255, 0.2);
     border-top: 8px solid #fff;
@@ -350,10 +438,12 @@ onMounted(async () => {
     width: 50px;
     animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
