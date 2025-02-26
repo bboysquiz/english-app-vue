@@ -109,6 +109,7 @@ const switchLanguage = (lang) => {
   currentLanguage.value = lang;
   const targetLeft = lang === 'ru' ? '0%' : '50%';
   gsap.to(indicator.value, { duration: 0.3, left: targetLeft });
+  nextWord()
 };
 
 const fetchUser = async () => {
@@ -139,32 +140,39 @@ const nextWord = async () => {
 const fetchWord = async () => {
     loading.value = true;
     const exclude = recentWords.value.join(',');
-    await axios
-        .get(`/api/dictionary/random`, {
+    try {
+        // Передаем дополнительные параметры: source_language и target_language
+        const res = await axios.get(`/api/dictionary/random`, {
             params: {
                 userId: userId.value,
-                exclude
+                exclude,
+                // Если currentLanguage === 'en', то ищем статистику для пары en→ru,
+                // иначе для пары ru→en.
+                source_language: currentLanguage.value === 'en' ? 'en' : 'ru',
+                target_language: currentLanguage.value === 'en' ? 'ru' : 'en'
             },
             withCredentials: true,
-        })
-        .then((res) => {
-            if (res.data && res.data.word) {
-                id.value = res.data.id
-                word.value = res.data.word;
-                translation.value = res.data.translation;
-                wordRating.value = res.data.rating;
-                wordCorrect.value = res.data.correct_answer;
-                wordIncorrect.value = res.data.incorrect_answer;
-            }
-
-            recentWords.value.push(res.data.word);
-            if (recentWords.value.length > 5) {
-                recentWords.value.shift(); // Удаляем старые записи, оставляя только последние 5
-            }
-        })
-        .catch((error) => {
-            console.error('Ошибка запроса:', error);
         });
+        
+        if (res.data && res.data.word) {
+            id.value = res.data.id;
+            word.value = res.data.word;
+            translation.value = res.data.translation;
+            // Эти поля берутся из строки статистики, выбранной в запросе
+            wordRating.value = res.data.rating;
+            // В API могут называться либо correct_answer / incorrect_answer,
+            // либо correct_answers / incorrect_answers – нужно, чтобы совпадали с беком
+            wordCorrect.value = res.data.correct_answers;
+            wordIncorrect.value = res.data.incorrect_answers;
+        }
+
+        recentWords.value.push(res.data.word);
+        if (recentWords.value.length > 5) {
+            recentWords.value.shift(); // оставляем только последние 5 записей
+        }
+    } catch (error) {
+        console.error('Ошибка запроса:', error);
+    }
     loading.value = false;
 };
 const fetchStats = async () => {
@@ -199,7 +207,7 @@ const checkTranslation = async () => {
     }
     loading.value = true;
 
-    // Подготовка строк
+    // Подготовка строки для сравнения
     const input = inputValue.value.trim().toLowerCase()
         .replace(/ё/g, 'е')
         .replace(/й/g, 'и');
@@ -208,7 +216,6 @@ const checkTranslation = async () => {
         .replace(/ё/g, 'е')
         .replace(/й/g, 'и');
 
-    // Сравнение
     if (input === expected) {
         isAccess.value = true;
         correctWords.value += 1;
@@ -224,11 +231,16 @@ const checkTranslation = async () => {
             userId: userId.value,
             correctWords: correctWords.value,
         });
+        // При обновлении рейтинга передаем также параметры языковой пары:
         await axios.put(`/api/dictionary/rating`, {
             id: id.value,
             rating: wordRating.value,
             correctPoint: wordCorrect.value,
             incorrectPoint: wordIncorrect.value,
+            // Если currentLanguage === 'en', то обновляем статистику для пары en→ru,
+            // иначе для пары ru→en.
+            source_language: currentLanguage.value === 'en' ? 'en' : 'ru',
+            target_language: currentLanguage.value === 'en' ? 'ru' : 'en',
             userId: userId.value,
         });
     } else {
@@ -251,6 +263,8 @@ const checkTranslation = async () => {
             rating: wordRating.value,
             correctPoint: wordCorrect.value,
             incorrectPoint: wordIncorrect.value,
+            source_language: currentLanguage.value === 'en' ? 'en' : 'ru',
+            target_language: currentLanguage.value === 'en' ? 'ru' : 'en',
             userId: userId.value,
         });
     }
