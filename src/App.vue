@@ -1,15 +1,19 @@
 <template>
   <div class="main">
     <header class="header">
-      <button v-if="router.currentRoute.value.fullPath !== '/login' && router.currentRoute.value.fullPath !== '/register'" class="logout-button" @click="logout">logout</button>
+      <button v-if="router.currentRoute.value.fullPath !== '/login' && router.currentRoute.value.fullPath !== '/register'" class="logout-button" @click="logout">
+        <img src="./assets/logout.svg" alt="logout" class="logout-img">
+      </button>
     </header>
     <router-view></router-view>
     <footer class="footer" v-if="router.currentRoute.value.fullPath !== '/login' && router.currentRoute.value.fullPath !== '/register'">
       <router-link class="link" :to="{ name: 'main' }">
-        <img src="./assets/home.svg" alt="home" class="footer-img">
+        <img src="./assets/home.svg" alt="home" class="footer-img footer-img-home">
+        <div class="footer-link-title">Учить</div>
       </router-link>
       <router-link class="link" :to="{ name: 'dictionary' }">
-        <img src="./assets/dictionary.svg" alt="dictionary" class="footer-img">
+        <img src="./assets/dictionary.svg" alt="dictionary" class="footer-img footer-img-dictionary">
+        <div class="footer-link-title">Словарь</div>
       </router-link>
     </footer>
   </div>
@@ -36,7 +40,7 @@ const logout = async () => {
 
 <style scoped>
 .main {
-  background: url(../src/assets/bg.jpg) center no-repeat;
+  background-color: #0A0A0A;
   overflow-y: hidden;
   height: 100vh;
   width: 100vw;
@@ -47,30 +51,56 @@ const logout = async () => {
   display: flex;
   justify-content: space-around;
   position: fixed;
-  bottom: 2vh;
+  bottom: 0;
   left: 0;
   width: 100%;
+  height: 8.42vh;
 }
 
 .footer-img {
   width: 6vh;
 }
-
-.link.router-link-active {
-  border-bottom: 2px solid #FFFFFF;
+.link {
   filter: brightness(0) invert(1);
 }
+.link.router-link-active {
+  filter: none;
+}
+
 
 .header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-top: 3vh;
-  padding-right: 3vw;
 }
 
 .logout-button {
-  width: 10vw;
-  height: 3vh;
+  width: 12.31vw;
+  height: 5.69vh;
+  border-radius: 65px;
+  background-color: #56565E;
+  position: absolute;
+  top: 8.67vh;
+  right: 40px;
+}
+.logout-img {
+  width: 4.19vw;
+  height: 2vh;
+  color: #fff;
+}
+.footer-img-home {
+  width: 6.64vw;
+  height: 2.23vh;
+}
+.footer-img-dictionary {
+  width: 3.86vw;
+  height: 2.23vh;
+}
+.footer-link-title {
+  color: #868686;
+  font-size: 20px;
+}
+.link.router-link-active > .footer-link-title{
+  color: #fff;
 }
 </style>

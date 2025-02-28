@@ -16,45 +16,80 @@
                 <div class="switcher-indicator" ref="indicator"></div>
             </div>
         </div>
+
+        <div class="word-container"
+            :style="isAnswered && isAccess ? 'background-color: #29513A' : isAnswered && !isAccess ? 'background-color: #6B2525' : ''">
+            <div class="word-smile-container">
+                <img :src="!isAnswered ? `/src/assets/smiles/question-smiles/smile-${randomSmile}.svg` : isAnswered && isAccess ? `/src/assets/smiles/access-smiles/smile-${randomSmile}.svg` : `/src/assets/smiles/fail-smiles/smile-${randomSmile}.svg` " alt="smile"
+                    class="word-smile-img">
+            </div>
+            <div class="word">
+                {{ displayedWord }}
+            </div>
+
+            <textarea type="text" class="input" v-model="inputValue" placeholder="Input a translation"
+                ref="translateInput" @keydown.enter="handleButtonClick" 
+                :style="isAnswered && isAccess ? 'background-color: #212825;' : isAnswered && !isAccess ? 'background-color: #331212; height: 7.81vh;' : ''" 
+                autofocus> </textarea>
+            <button v-if="!isAnswered" class="button" ref="checkButton" @click="handleButtonClick">
+                <div class="button-content">
+                    <img src="../assets/check-icon.svg" alt="check">
+                    <span>Проверить</span>
+                </div>
+            </button>
+            <div v-else-if="!isAccess" class="incorrect">{{ correctAnswer }}</div>
+
+
+            <button v-if="isAnswered" class="next" :style="isAccess ? 'background-color: #4ABA77;' : 'background-color: #F24E4E;'" @click="handleNextClick" ref="nextButton">
+                <div class="next-content">
+                    <img src="../assets/arrow.svg" alt="arrow" class="next-icon">
+                    <div class="next-title">Следующее слово</div>
+                </div>
+            </button>
+            <div class="word-statistic" :style="isAccess && isAnswered ? 'border: 1px solid #305F44;' : !isAccess && isAnswered ? 'border: 1px solid #622020;' : ''">
+                <div class="word-statistic-title">Статистика слова</div>
+                <div class="word-stats-container">
+                    <div class="word-rating word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                        <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
+                        <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
+                    </div>
+                    <div class="word-correct word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                        <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
+                        <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
+                    </div>
+                    <div class="word-incorrect word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                        <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
+                        <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <div class="stats">
-            <div class="points">
-                <img src="../assets/star.png" alt="star" class="stats-img points-img">
-                <div class="points-number stats-number">{{ points }}</div>
+            <div class="points stats-block">
+                <img src="../assets/star.svg" alt="star" class="stats-img points-img">
+                <div class="stats-block-text">
+                    <div class="points-number stats-number">{{ points }}</div>
+                    <div class="stats-title">Ваши очки</div>
+                </div>
             </div>
-            <div class="correct-words">
-                <img src="../assets/correct.png" alt="correct" class="stats-img correct-words-img">
-                <div class="correct-words-number stats-number">{{ correctWords }}</div>
+            <div class="correct-words stats-block">
+                <img src="../assets/correct.svg" alt="correct" class="stats-img correct-words-img">
+                <div class="stats-block-text">
+                    <div class="correct-words-number stats-number">{{ correctWords }}</div>
+                    <div class="stats-title">Правильных ответов</div>
+                </div>
             </div>
-            <div class="incorrect-words">
-                <img src="../assets/incorrect.png" alt="incorrect" class="stats-img incorrect-words-img">
-                <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
-            </div>
-        </div>
-        <div class="word">
-            {{ displayedWord }}
-        </div>
-        <div class="word-statistic">
-            <div class="word-rating word-stats">
-                <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
-                <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
-            </div>
-            <div class="word-correct word-stats">
-                <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
-                <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
-            </div>
-            <div class="word-incorrect word-stats">
-                <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
-                <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
+            <div class="incorrect-words stats-block">
+                <img src="../assets/incorrect.svg" alt="incorrect" class="stats-img incorrect-words-img">
+                <div class="stats-block-text">
+                    <div class="incorrect-words-number stats-number">{{ incorrectWords }}</div>
+                    <div class="stats-title">Неправильных ответов</div>
+                </div>
             </div>
         </div>
-        <input type="text" class="input" v-model="inputValue" placeholder="Input a translation" ref="translateInput"
-            @keydown.enter="checkTranslation" autofocus>
-        <button v-if="!isAnswered" class="button" @click="checkTranslation()">Enter</button>
-        <div v-else-if="isAccess" class="access">{{ correctAnswer }}</div>
-        <div v-else class="incorrect">{{ correctAnswer }}</div>
-
-
-        <button class="next" @click="nextWord()">Next</button>
     </div>
 </template>
 <script setup>
@@ -74,11 +109,16 @@ const isAccess = ref(true)
 
 const recentWords = ref([]);
 
+const checkButton = ref(null)
+const nextButton = ref(null)
+
 const points = ref(0);
 const correctWords = ref(0);
 const incorrectWords = ref(0);
 
 const translateInput = ref(null)
+
+const checkingTranslationStatus = ref(false)
 
 const currentLanguage = ref('ru');
 const indicator = ref(null);
@@ -86,30 +126,50 @@ const indicator = ref(null);
 const wordRating = ref(0)
 const wordCorrect = ref(0)
 const wordIncorrect = ref(0)
+const randomSmile = Math.floor(Math.random() * 12) + 1;
 
 const username = ref('');
 const userId = ref('')
 
 // Вычисляемое свойство для отображаемого слова
 const displayedWord = computed(() => {
-  // Если выбран режим en — показываем английское слово,
-  // если ru — показываем русский перевод
-  return currentLanguage.value === 'en' ? word.value : translation.value;
+    // Если выбран режим en — показываем английское слово,
+    // если ru — показываем русский перевод
+    return currentLanguage.value === 'en' ? word.value : translation.value;
 })
 
 // Вычисляемое свойство для корректного ответа
 const correctAnswer = computed(() => {
-  // Если режим en — ожидается русский ответ (translation),
-  // если ru — ожидается английский (word)
-  return currentLanguage.value === 'en' ? translation.value : word.value;
+    // Если режим en — ожидается русский ответ (translation),
+    // если ru — ожидается английский (word)
+    return currentLanguage.value === 'en' ? translation.value : word.value;
 })
 
+const handleButtonClick = async () => {
+    if (!checkingTranslationStatus.value) {
+        // Анимация: смена цвета на #5BB2FA, затем плавный возврат к исходному (#248FE7)
+        checkingTranslationStatus.value = true
+        gsap.to(checkButton.value, {
+            backgroundColor: "#5BB2FA",
+            duration: 0.2,
+            onComplete: () => {
+                gsap.to(checkButton.value, {
+                    backgroundColor: "#248FE7",
+                    duration: 0.2
+                })
+            }
+        })
+        // Затем выполняем основную логику проверки перевода
+        await checkTranslation()
+    }
+}
+
 const switchLanguage = (lang) => {
-  if (lang === currentLanguage.value) return;
-  currentLanguage.value = lang;
-  const targetLeft = lang === 'ru' ? '0%' : '50%';
-  gsap.to(indicator.value, { duration: 0.3, left: targetLeft });
-  nextWord()
+    if (lang === currentLanguage.value) return;
+    currentLanguage.value = lang;
+    const targetLeft = lang === 'ru' ? '0%' : '50%';
+    gsap.to(indicator.value, { duration: 0.3, left: targetLeft });
+    nextWord()
 };
 
 const fetchUser = async () => {
@@ -129,6 +189,20 @@ const fetchUser = async () => {
         console.error('Error fetching user:', error.response?.data?.message || error.message);
     }
 };
+
+const handleNextClick = () => {
+    gsap.to(checkButton.value, {
+        backgroundColor: "#5BB2FA",
+        duration: 0.2,
+        onComplete: () => {
+            gsap.to(checkButton.value, {
+                backgroundColor: "#248FE7",
+                duration: 0.2
+            })
+        }
+    })
+    nextWord()
+}
 
 const nextWord = async () => {
     word.value = ''
@@ -153,7 +227,7 @@ const fetchWord = async () => {
             },
             withCredentials: true,
         });
-        
+
         if (res.data && res.data.word) {
             id.value = res.data.id;
             word.value = res.data.word;
@@ -202,7 +276,7 @@ const fetchStats = async () => {
 
 const checkTranslation = async () => {
     if (isAnswered.value) {
-        nextWord();
+        handleNextClick();
         return;
     }
     loading.value = true;
@@ -267,10 +341,21 @@ const checkTranslation = async () => {
             target_language: currentLanguage.value === 'en' ? 'ru' : 'en',
             userId: userId.value,
         });
+        gsap.to(checkButton.value, {
+            backgroundColor: "#5BB2FA",
+            duration: 0.2,
+            onComplete: () => {
+                gsap.to(checkButton.value, {
+                    backgroundColor: "#248FE7",
+                    duration: 0.2
+                })
+            }
+        })
     }
 
     isAnswered.value = !isAnswered.value;
     loading.value = false;
+    checkingTranslationStatus.value = false
 };
 
 onMounted(async () => {
@@ -283,69 +368,82 @@ onMounted(async () => {
 <style scoped>
 .main-container {
     width: 100vw;
-    padding-right: 3vw;
-    padding-left: 3vw;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    padding-top: 7vh;
     box-sizing: border-box;
 }
+
 .language-switcher-container {
-    width: 120px;
-    margin-bottom: 20px;
-  }
-  .switcher {
+    width: 100%;
+    display: flex;
+    margin-top: 8.67vh;
+    justify-content: flex-start;
+    padding-left: 40px;
+}
+
+.switcher {
     position: relative;
     display: flex;
-    background: #ccc;
+    background-color: #56565E;
     border-radius: 20px;
     overflow: hidden;
-  }
-  .switcher-option {
+    width: 36.84vw;
+    height: 5.69vh;
+    font-size: 44px;
+    border-radius: 65px;
+}
+
+.switcher-option {
     width: 50%;
     text-align: center;
-    padding: 8px 0;
     cursor: pointer;
     z-index: 1;
     font-weight: bold;
-    color: #000;
-  }
-  .switcher-option.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #868686;
+}
+
+.switcher-option.active {
     color: #fff;
-  }
-  .switcher-indicator {
+}
+
+.switcher-indicator {
     position: absolute;
     top: 0;
     left: 0;
-    width: 50%;
-    height: 100%;
-    background: #2D33DB;
-    border-radius: 20px;
+    width: calc(50% - 14px);
+    height: calc(100% - 14px);
+    background: #248FE7;
     z-index: 0;
-  }
+    border-radius: 65px;
+    border: 7px solid #56565E;
+}
 
 .incorrect {
-    background-color: red;
+    background-color: #4ABA77;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    border-radius: 7px;
-    font-size: 20px;
+    width: calc(100% - 60px);
+    border-radius: 30px;
+    font-size: 30px;
+    height: 7.03vh;
+    margin-top: 0.83vh;
+    color: #fff;
 }
 
 .word {
-    width: 100%;
+    width: calc(100% - 60px);
     justify-content: center;
     display: flex;
-    color: #D0D6EB;
+    color: #fff;
     align-items: center;
-    font-size: 34px;
-    margin-top: 3vh;
-    margin-bottom: 3vh;
-    margin-top: 12vh;
-    margin-bottom: 12vh;
+    font-size: 55px;
+    margin-top: 7.42vh;
+    height: 11.04vh;
 }
 
 .access {
@@ -359,77 +457,107 @@ onMounted(async () => {
 }
 
 .next {
-    width: 100%;
+    width: calc(100% - 60px);
     display: flex;
     justify-content: center;
     font-size: 20px;
-    background-color: #D0D6EB;
-    color: #000;
+    color: #fff;
     align-items: center;
-    margin-top: 2vh;
-    height: 7vh;
+    height: 6.69vh;
+    margin-top: 0.83vh;
+    border: none !important;
+    outline: none !important;
+    border-radius: 30px;
 }
 
 .button {
-    width: 100%;
+    width: calc(100% - 60px);
     display: flex;
     justify-content: center;
-    font-size: 28px;
-    background-color: #2D33DB;
+    font-size: 40px;
+    background-color: #248FE7;
     color: #fff;
     align-items: center;
-    margin-top: 2vh;
-    height: 7vh;
+    height: 6.69vh;
+    margin-top: 0.83vh;
+    border-radius: 30px;
+    border: none !important;
+    outline: none !important;
 }
 
 .input {
-    width: 100%;
+    width: calc(100% - 60px);
     border-radius: 30px;
-    background: linear-gradient(rgba(3, 3, 31, 1), rgba(6, 6, 37, 0.7), rgba(9, 9, 44, 0));
+    background: #414147;
     border: none;
     outline: none;
-    padding-left: 20px;
     color: #fff;
     font-size: 20px;
-    height: 10vh;
+    height: 11.94vh;
+    padding: 35px 45px;
+    box-sizing: border-box;
+    margin-top: 2.79vh;
 }
 
 .input::placeholder {
-    color: #c1c1c1;
+    color: #868686;
 }
 
 .stats-img {
-    width: 25px;
+    width: 7.24vw;
+    height: 3.34vh;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: 13px solid #fff;
+    border-radius: 100px;
+    background-color: #fff;
+    box-sizing: border-box;
 }
 
 .stats-number {
     color: #fff;
+    font-size: 45px;
 }
 
 .stats {
     display: flex;
     justify-content: space-between;
-    width: 35vw;
+    width: calc(100% - 80px);
+    margin-top: 1.67vh;
 }
 
 .word-statistic {
-    width: 100%;
+    width: calc(100% - 60px);
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     gap: 30px;
-    margin-bottom: 3vh;
+    margin-top: 2.23vh;
+    padding: 12px 12px 12px 25px;
+    box-sizing: border-box;
+    border: 1px solid #414147;
+    border-radius: 30px;
 }
 
 .word-stats {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    width: 14.37vw;
+    height: 6.64vh;
+    background-color: #414147;
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding: 18px 20px 12px 19px;
 }
 
 .word-stats-text {
     width: 100%;
     text-align: center;
     color: #fff;
+    font-size: 35px;
 }
 
 .loader-container {
@@ -451,6 +579,96 @@ onMounted(async () => {
     border-radius: 50%;
     width: 50px;
     animation: spin 1s linear infinite;
+}
+
+.word-smile-img {
+    width: 11.31vw;
+    height: 5.22vh;
+}
+
+.word-smile-container {
+    box-sizing: border-box;
+    width: 25.24vw;
+    height: 11.66vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 20px solid #0A0A0A;
+    border-radius: 140px;
+    background-color: #fff;
+    position: absolute;
+    top: -5.8vh;
+}
+
+.word-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: calc(100vw - 80px);
+    background-color: #2E2E31;
+    margin-top: 5.94vh;
+    position: relative;
+    padding-bottom: 30px;
+    border-radius: 50px;
+}
+
+.button-content {
+    width: 32.729vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+.next-content {
+    width: 50.2vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+.word-statistic-title {
+    color: #fff;
+    font-size: 35px;
+    width: 10.65vw;
+}
+
+.word-stats-container {
+    display: flex;
+    justify-content: space-between;
+    width: 45.53vw;
+}
+
+.stats-block-text {
+    height: 4.63vh;
+    width: 15.82vw;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.stats-block {
+    width: 28.86vw;
+    height: 9.65vh;
+    border-radius: 35px;
+    background-color: #248FE7;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    flex-wrap: wrap;
+    padding-left: 25px;
+    box-sizing: border-box;
+}
+
+.stats-title {
+    font-size: 20px;
+    color: #fff;
+    width: 100%;
+    text-align: left;
+    line-height: 20px;
+}
+
+.next-title {
+    font-size: 40px;
+    color: #fff;
 }
 
 @keyframes spin {
