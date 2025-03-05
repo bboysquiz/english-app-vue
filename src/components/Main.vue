@@ -381,6 +381,11 @@ onMounted(async () => {
     justify-content: flex-start;
     padding-left: 40px;
 }
+@media screen and (max-width: 767px) {
+    .language-switcher-container {
+        margin-top: 70px;
+    }
+}
 
 .switcher {
     position: relative;
@@ -388,10 +393,17 @@ onMounted(async () => {
     background-color: #56565E;
     border-radius: 20px;
     overflow: hidden;
-    width: 36.84vw;
-    height: 5.69vh;
+    width: 305px;
+    height: 102px;
     font-size: 44px;
     border-radius: 65px;
+}
+@media screen and (max-width: 768px ) {
+    .switcher {
+        width: 119px;
+        height: 40px;
+        font-size: 14.29px;
+    }    
 }
 
 .switcher-option {
@@ -421,6 +433,13 @@ onMounted(async () => {
     border-radius: 65px;
     border: 7px solid #56565E;
 }
+@media screen and (max-width: 767px) {
+    .switcher-indicator {
+        height: 100%;
+        border: 2.5px solid #56565E;
+        width: 50%;
+    }
+}
 
 .incorrect {
     background-color: #4ABA77;
@@ -443,7 +462,15 @@ onMounted(async () => {
     align-items: center;
     font-size: 55px;
     margin-top: 7.42vh;
-    height: 11.04vh;
+    height: 198px;
+}
+@media screen and (max-width: 767px) {
+    .word {
+        margin-top: 47px;
+        font-size: 18px;
+        height: 42px;
+        width: calc(100% - 26px);
+    }
 }
 
 .access {
@@ -485,6 +512,15 @@ onMounted(async () => {
     outline: none !important;
 }
 
+@media screen and (max-width: 767px) {
+    .button {
+        width: calc(100% - 26px);
+        font-size: 17px;
+        border-radius: 13px;
+
+    }
+}
+
 .input {
     width: calc(100% - 60px);
     border-radius: 30px;
@@ -493,10 +529,21 @@ onMounted(async () => {
     outline: none;
     color: #fff;
     font-size: 20px;
-    height: 11.94vh;
+    height: 281px;
     padding: 35px 45px;
     box-sizing: border-box;
     margin-top: 2.79vh;
+}
+@media screen and (max-width: 767px) {
+    .input {
+        height: 60px;
+        margin-top: 15px;
+        border-radius: 13px;
+        width: calc(100% - 26px);
+        font-size: 13px;
+        padding-top: 15px;
+        padding-left: 17px;
+    }
 }
 
 .input::placeholder {
@@ -514,10 +561,21 @@ onMounted(async () => {
     background-color: #fff;
     box-sizing: border-box;
 }
-
+@media screen and (max-width: 767px) {
+    .stats-img {
+        width: 20px;
+        height: 20px;
+        border: 5px solid #fff;
+    }
+}
 .stats-number {
     color: #fff;
     font-size: 45px;
+}
+@media screen and (max-width: 767px) {
+    .stats-number {
+        font-size: 20px;
+    }
 }
 
 .stats {
@@ -526,7 +584,11 @@ onMounted(async () => {
     width: calc(100% - 80px);
     margin-top: 1.67vh;
 }
-
+@media screen and (max-width: 767px) {
+    .stats {
+        width: calc(100% - 34px);
+    }
+}
 .word-statistic {
     width: calc(100% - 60px);
     display: flex;
@@ -540,6 +602,14 @@ onMounted(async () => {
     border-radius: 30px;
 }
 
+@media screen and (max-width: 767px) {
+    .word-statistic {
+        width: calc(100% - 26px);
+        border-radius: 13px;
+    }
+}
+
+
 .word-stats {
     display: flex;
     flex-wrap: wrap;
@@ -552,6 +622,14 @@ onMounted(async () => {
     box-sizing: border-box;
     padding: 18px 20px 12px 19px;
 }
+@media screen and (max-width: 767px) {
+    .word-stats {
+        width: 51px;
+        height: 51px;
+        border-radius: 9px;
+        padding: 6px 9px 6px 8px;
+    }
+}
 
 .word-stats-text {
     width: 100%;
@@ -560,6 +638,11 @@ onMounted(async () => {
     font-size: 35px;
 }
 
+@media screen and (max-width: 767px) {
+    .word-stats-text {
+        font-size: 15px;
+    }
+}
 .loader-container {
     display: flex;
     justify-content: center;
@@ -582,14 +665,20 @@ onMounted(async () => {
 }
 
 .word-smile-img {
-    width: 11.31vw;
-    height: 5.22vh;
+    width: 93.72px;
+    height: 93.72px;
+}
+@media screen and (max-width: 767px) {
+    .word-smile-img {
+        width: 33px;
+        height: 33px;
+    }
 }
 
 .word-smile-container {
     box-sizing: border-box;
-    width: 25.24vw;
-    height: 11.66vh;
+    width: 209px;
+    height: 209px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -597,7 +686,15 @@ onMounted(async () => {
     border-radius: 140px;
     background-color: #fff;
     position: absolute;
-    top: -5.8vh;
+    top: 0px;
+    transform: translateY(-50%);
+}
+@media screen and (max-width: 767px) {
+    .word-smile-container {
+        border: 9px solid #0A0A0A;
+        width: 75px;
+        height: 75px;
+    }
 }
 
 .word-container {
@@ -606,16 +703,31 @@ onMounted(async () => {
     flex-wrap: wrap;
     width: calc(100vw - 80px);
     background-color: #2E2E31;
-    margin-top: 5.94vh;
+    margin-top: 106.5px;
     position: relative;
     padding-bottom: 30px;
     border-radius: 50px;
+}
+@media screen and (max-width: 767px) {
+    .word-container {
+        width: calc(100vw - 36px);
+        border-radius: 21px;
+        margin-top: 49px;
+    }
 }
 
 .button-content {
     width: 32.729vw;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+@media screen and (max-width: 767px) {
+    .button-content > img {
+        width: 13px;
+        height: 13px;
+    }
 }
 
 .next-content {
@@ -629,11 +741,21 @@ onMounted(async () => {
     font-size: 35px;
     width: 10.65vw;
 }
+@media screen and (max-width: 767px) {
+    .word-statistic-title {
+        font-size: 15px;
+    }
+}
 
 .word-stats-container {
     display: flex;
     justify-content: space-between;
     width: 45.53vw;
+}
+@media screen and (max-width: 767px) {
+    .word-stats-container {
+        width: 163px;
+    }
 }
 
 .stats-block-text {
@@ -643,7 +765,12 @@ onMounted(async () => {
     justify-content: flex-start;
     flex-wrap: wrap;
 }
-
+@media screen and (max-width: 767px) {
+    .stats-block-text {
+        height: 35px;
+        width: 57px;
+    }
+}
 .stats-block {
     width: 28.86vw;
     height: 9.65vh;
@@ -657,7 +784,14 @@ onMounted(async () => {
     padding-left: 25px;
     box-sizing: border-box;
 }
-
+@media screen and (max-width: 767px) {
+    .stats-block {
+        width: 103px;
+        height: 75px;
+        border-radius: 15px;
+        padding-left: 10px;
+    }
+}
 .stats-title {
     font-size: 20px;
     color: #fff;
@@ -665,11 +799,33 @@ onMounted(async () => {
     text-align: left;
     line-height: 20px;
 }
+@media screen and (max-width: 767px) {
+    .stats-title {
+        font-size: 9px;
+        line-height: 10px;
+    }
+}
 
 .next-title {
     font-size: 40px;
     color: #fff;
 }
+
+@media screen and (max-width: 767px) {
+    .word-rating-img {
+        width: 11px;
+        height: 13px;
+    } 
+    .word-correct-img {
+        width: 12px;
+        height: 12px;
+    }
+    .word-incorrect-img {
+        width: 12px;
+        height: 13px;
+    }
+}
+
 
 @keyframes spin {
     0% {

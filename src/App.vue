@@ -57,6 +57,14 @@ const logout = async () => {
   height: 8.42vh;
 }
 
+@media screen and (max-width: 767px) {
+  .footer {
+    background-color: #2e2e31;
+    align-items: center;
+    height: 66px;
+  }
+}
+
 .footer-img {
   width: 6vh;
 }
@@ -75,18 +83,32 @@ const logout = async () => {
 }
 
 .logout-button {
-  width: 12.31vw;
-  height: 5.69vh;
+  width: 102px;
+  height: 102px;
   border-radius: 65px;
   background-color: #56565E;
   position: absolute;
   top: 8.67vh;
   right: 40px;
+  z-index: 1;
+}
+@media screen and (max-width: 767px) {
+  .logout-button {
+    width: 40px;
+    height: 40px;
+    top: 70px;
+  }
 }
 .logout-img {
-  width: 4.19vw;
-  height: 2vh;
+  width: 36px;
+  height: 36px;
   color: #fff;
+}
+@media screen and (max-width: 767px) {
+  .logout-img {
+    width: 14.12px;
+    height: 12.12px;
+  }
 }
 .footer-img-home {
   width: 6.64vw;
