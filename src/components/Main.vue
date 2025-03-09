@@ -20,7 +20,11 @@
         <div class="word-container"
             :style="isAnswered && isAccess ? 'background-color: #29513A' : isAnswered && !isAccess ? 'background-color: #6B2525' : ''">
             <div class="word-smile-container">
-                <img :src="!isAnswered ? `/src/assets/smiles/question-smiles/smile-${randomSmile}.svg` : isAnswered && isAccess ? `/src/assets/smiles/access-smiles/smile-${randomSmile}.svg` : `/src/assets/smiles/fail-smiles/smile-${randomSmile}.svg` " alt="smile"
+                <img v-if="!isAnswered" :src="`/src/assets/smiles/question-smiles/smile-${randomSmile}.svg` " alt="smile"
+                    class="word-smile-img">
+                <img v-else-if="isAnswered && isAccess" :src="`/src/assets/smiles/access-smiles/smile-${randomSmile}.svg`" alt="smile"
+                    class="word-smile-img">
+                <img v-else :src="`/src/assets/smiles/fail-smiles/smile-${randomSmile}.svg`" alt="smile"
                     class="word-smile-img">
             </div>
             <div class="word">
