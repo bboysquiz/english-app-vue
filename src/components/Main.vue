@@ -453,6 +453,12 @@ onMounted(async () => {
     margin-top: 0.83vh;
     color: #fff;
 }
+@media screen and (max-width: 767px) {
+    .incorrect {
+        height: 45px;
+        font-size: 13px;
+    }
+}
 
 .word {
     width: calc(100% - 60px);
@@ -496,6 +502,12 @@ onMounted(async () => {
     outline: none !important;
     border-radius: 30px;
 }
+@media screen and (max-width: 767px) {
+    .next {
+        height: 52px;
+        font-size: 17px;
+    }
+}
 
 .button {
     width: calc(100% - 60px);
@@ -534,6 +546,7 @@ onMounted(async () => {
     box-sizing: border-box;
     margin-top: 2.79vh;
 }
+
 @media screen and (max-width: 767px) {
     .input {
         height: 60px;
@@ -568,10 +581,12 @@ onMounted(async () => {
         border: 5px solid #fff;
     }
 }
+
 .stats-number {
     color: #fff;
     font-size: 45px;
 }
+
 @media screen and (max-width: 767px) {
     .stats-number {
         font-size: 20px;
@@ -810,6 +825,23 @@ onMounted(async () => {
     font-size: 40px;
     color: #fff;
 }
+@media screen and (max-width: 767px) {
+    .next-title {
+        font-size: 17px;
+    }
+    .next-icon {
+        height: 13px;
+        width: 13px;
+    }
+    .next-content {
+        width: 181px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 21px;
+    }
+}
+
 
 @media screen and (max-width: 767px) {
     .word-rating-img {
