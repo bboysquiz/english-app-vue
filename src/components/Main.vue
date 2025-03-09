@@ -20,12 +20,7 @@
         <div class="word-container"
             :style="isAnswered && isAccess ? 'background-color: #29513A' : isAnswered && !isAccess ? 'background-color: #6B2525' : ''">
             <div class="word-smile-container">
-                <img v-if="!isAnswered" :src="`/src/assets/smiles/question-smiles/smile-${randomSmile}.svg` " alt="smile"
-                    class="word-smile-img">
-                <img v-else-if="isAnswered && isAccess" :src="`/src/assets/smiles/access-smiles/smile-${randomSmile}.svg`" alt="smile"
-                    class="word-smile-img">
-                <img v-else :src="`/src/assets/smiles/fail-smiles/smile-${randomSmile}.svg`" alt="smile"
-                    class="word-smile-img">
+                <img :src="smilePath" alt="smile" class="word-smile-img">
             </div>
             <div class="word">
                 {{ displayedWord }}
@@ -148,6 +143,21 @@ const correctAnswer = computed(() => {
     // если ru — ожидается английский (word)
     return currentLanguage.value === 'en' ? translation.value : word.value;
 })
+
+const smilePath = computed(() => {
+    const smileFolder = !isAnswered.value
+        ? 'question-smiles'
+        : isAccess.value
+        ? 'access-smiles'
+        : 'fail-smiles';
+
+    return new URL(`../assets/smiles/${smileFolder}/smile-${randomSmile}.svg`, import.meta.url).href;
+});
+
+const smileFolder = computed(() => {
+  if (!isAnswered.value) return 'question-smiles';
+  return isAccess.value ? 'access-smiles' : 'fail-smiles';
+});
 
 const handleButtonClick = async () => {
     if (!checkingTranslationStatus.value) {
