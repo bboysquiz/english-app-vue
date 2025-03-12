@@ -96,7 +96,8 @@ const logout = async () => {
   .logout-button {
     width: 40px;
     height: 40px;
-    top: 70px;
+    top: 50px;
+    right: 17px;
   }
 }
 .logout-img {

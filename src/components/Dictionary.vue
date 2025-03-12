@@ -367,6 +367,7 @@ onMounted(async () => {
 
 .dictionary-ul {
     overflow-y: scroll;
+    padding-left: 0;
 }
 
 .word {
@@ -475,6 +476,7 @@ onMounted(async () => {
     padding-left: 85px;
     color: #fff;
     box-sizing: border-box;
+    outline: none;
 }
 
 .search-icon {
@@ -515,6 +517,65 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
 
+@media screen and (max-width: 767px){
+    .dictionary-container {
+        padding: 0 17px;
+        margin-top: 109px;
+        height: 73vh;
+    }
+    .search-wrapper {
+        height: 40px;
+        top: 50px;
+        left: 17px;
+    }
+    .search-input {
+        height: 40px;
+        border-radius: 8.7px;
+        padding-left: 36px;
+        font-size: 13px;
+    }
+    .search-icon {
+        width: 11px;
+        height: 10px;
+        left: 12px;
+    }
+    .word {
+        font-size: 13px;
+    }
+    .translation {
+        font-size: 13px;
+    }
+    .dictionary-li::before {
+        width: 4px;
+        height: calc(100% - 13px);
+    }
+    .dictionary-li:first-child {
+        margin-top: 0;
+    }
+    .dictionary-li {
+        padding-bottom: 13px;
+        padding-left: 16px;
+    }
+    .dictionary-ul {
+        margin-top: 0;
+    }
+    .dictionary__open-add-word-menu {
+        width: calc(100% - 34px);
+        bottom: 76px;
+        height: 52px;
+    }
+    .open-add-word-menu__button {
+        height: 100%;
+    }
+    .open-add-word-menu__content {
+        font-size: 17px;
+        width: 159px;
+    }
+    .open-add-word-menu__img {
+        width: 13px;
+        height: 13px;
+    }
 }
 </style>

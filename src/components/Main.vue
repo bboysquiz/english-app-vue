@@ -397,7 +397,8 @@ onMounted(async () => {
 }
 @media screen and (max-width: 767px) {
     .language-switcher-container {
-        margin-top: 70px;
+        margin-top: 50px;
+        padding-left: 17px;
     }
 }
 
@@ -471,6 +472,8 @@ onMounted(async () => {
     .incorrect {
         height: 45px;
         font-size: 13px;
+        width: calc(100% - 26px);
+        border-radius: 13px;
     }
 }
 
@@ -520,6 +523,8 @@ onMounted(async () => {
     .next {
         height: 52px;
         font-size: 17px;
+        width: calc(100% - 26px);
+        border-radius: 13px;
     }
 }
 
@@ -635,6 +640,7 @@ onMounted(async () => {
     .word-statistic {
         width: calc(100% - 26px);
         border-radius: 13px;
+        margin-top: 15px;
     }
 }
 
@@ -736,12 +742,14 @@ onMounted(async () => {
     position: relative;
     padding-bottom: 30px;
     border-radius: 50px;
+    transition: 1s ease-in-out;
 }
 @media screen and (max-width: 767px) {
     .word-container {
         width: calc(100vw - 36px);
         border-radius: 21px;
-        margin-top: 49px;
+        margin-top: 41px;
+        padding-bottom: 13px;
     }
 }
 
