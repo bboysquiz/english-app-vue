@@ -21,21 +21,23 @@
             </button>
         </div>
         <!-- Контекстное меню -->
-        <div class="dictionary__context-menu" ref="contextMenu" v-if="showContextMenu">
-            <button class="dictionary__context-button edit-button"
-                @click="() => { openEditMenu(selectedItem.value); hideContextMenu(); }">
-                <img src="../assets/edit.svg" alt="edit" class="edit-icon">
-                <span>Редактировать</span>
-            </button>
-            <button class="dictionary__context-button delete-button"
-                @click="() => { deletePair(selectedItem.value.id); hideContextMenu(); }">
-                <img src="../assets/delete.svg" alt="delete" class="delete-icon">
-                <span>Удалить</span>
-            </button>
-            <button class="dictionary__context-button cancel-button" @click="hideContextMenu">
-                <img src="../assets/cancel.svg" alt="cancel" class="cancel-icon">
-                <span>Отмена</span>
-            </button>
+         <div class="dictionary__context-menu-overlay" ref="contextMenu" v-if="showContextMenu">         
+            <div class="dictionary__context-menu">
+                <button class="dictionary__context-button edit-button"
+                    @click="() => { openEditMenu(selectedItem.value); hideContextMenu(); }">
+                    <img src="../assets/edit.svg" alt="edit" class="edit-icon">
+                    <span>Редактировать</span>
+                </button>
+                <button class="dictionary__context-button delete-button"
+                    @click="() => { deletePair(selectedItem.value.id); hideContextMenu(); }">
+                    <img src="../assets/delete.svg" alt="delete" class="delete-icon">
+                    <span>Удалить</span>
+                </button>
+                <button class="dictionary__context-button cancel-button" @click="hideContextMenu">
+                    <img src="../assets/cancel.svg" alt="cancel" class="cancel-icon">
+                    <span>Отмена</span>
+                </button>
+            </div>
         </div>
 
         <div class="dictionary__edit-menu" v-show="showAddMenu">
@@ -501,6 +503,10 @@ onMounted(async () => {
     justify-content: flex-start;
     align-items: center;
     padding-left: 60px;
+    border-bottom: 1px solid #4E4E55;
+}
+.dictionary__context-button:last-child {
+    border-bottom: none;
 }
 .dictionary__context-button > img {
     margin-right: 30px;
@@ -517,6 +523,15 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
+.dictionary__context-menu-overlay {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .7);
 }
 
 @media screen and (max-width: 767px){
@@ -576,6 +591,61 @@ onMounted(async () => {
     .open-add-word-menu__img {
         width: 13px;
         height: 13px;
+    }
+    .dictionary__context-button {
+        height: 41px;
+        font-size: 13px;
+        padding-left: 26px;
+    }
+    .cancel-button > span {
+        font-size: 13px;
+    }
+    .edit-icon {
+        width: 11px;
+        height: 11px;
+    }
+    .delete-icon {
+        width: 11px;
+        height: 11px;
+    }
+    .cancel-icon {
+        width: 11px;
+        height: 11px;
+    }
+    .dictionary__context-button > img {
+        margin-right: 13px;
+    }
+    .dictionary__context-menu {
+        bottom: 0px;
+    }
+    .edit-input {
+        height: 45px;
+        width: calc(100% - 34px);
+        border-radius: 13px;
+        font-size: 11px;
+        padding-left: 20px;
+        margin-top: 5px;
+    }
+    .edit-menu__button {
+        height: 52px;
+        border-radius: 13px;
+        font-size: 17px;
+        width: calc(50% - 2px);
+    }
+    .edit-menu__cancel-img {
+        height: 13px;
+        width: 13px;
+    }
+    .edit-menu__button-content {
+        width: 92px;
+    }
+    .dictionary__edit-menu {
+        padding: 11px 0 16px 0;
+    }
+    .edit-menu__buttons {
+        margin-top: 5px;
+        height: 52px;
+        width: calc(100% - 34px);
     }
 }
 </style>
