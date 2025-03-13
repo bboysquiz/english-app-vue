@@ -184,7 +184,7 @@ const handleLogin = async () => {
         height: 90px;
         margin-top: 0!important;
     }
-    .word-smile-img {
+    .login-smile-img {
         width: 33px;
         height: 33px;
     }
