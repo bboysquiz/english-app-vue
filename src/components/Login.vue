@@ -132,6 +132,7 @@ const handleLogin = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: #fff;
 }
 .login-register-button {
     display: flex;
