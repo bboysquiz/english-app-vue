@@ -3,7 +3,7 @@
         <form class="login-form" @submit.prevent="handleLogin">
             <div class="login-container">
                 <div class="login-smile-container">
-                    <img src="../assets/login-smile.svg" alt="smile" class="word-smile-img">
+                    <img src="../assets/login-smile.svg" alt="smile" class="login-smile-img">
                 </div>
                 <h2 class="login-title">Вход</h2>
                 <div>
@@ -59,10 +59,6 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login {
-
-
-}
 .login-form {
     display: flex;
     justify-content: center;
@@ -124,6 +120,7 @@ const handleLogin = async () => {
 .login-button {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: calc(100% - 34px);
     background-color: #248FE7;
     border-radius: 13px;
@@ -175,7 +172,7 @@ const handleLogin = async () => {
     transform: translateY(-50%);
     margin-top: 0!important;
 }
-.word-smile-img {
+.login-smile-img {
     width: 93.72px;
     height: 93.72px;
 }
