@@ -29,7 +29,7 @@
                     <span>Редактировать</span>
                 </button>
                 <button class="dictionary__context-button delete-button"
-                    @click="() => { deletePair(selectedItem.value.id); hideContextMenu(); }">
+                    @click="() => { deletePair(); hideContextMenu(); }">
                     <img src="../assets/delete.svg" alt="delete" class="delete-icon">
                     <span>Удалить</span>
                 </button>
@@ -120,23 +120,23 @@ const fetchUser = async () => {
     }
 };
 
-const deletePair = async (id) => {
+const deletePair = async () => {
     try {
-        await axios.delete(`/api/dictionary/${id}`, {
+        await axios.delete(`/api/dictionary/${selectedItem.value.id}`, {
             params: { userId: userId.value },
             withCredentials: true,
         });
-        dictionary.value = dictionary.value.filter(item => item.id !== id);
+        dictionary.value = dictionary.value.filter(item => item.id !== selectedItem.value.id);
     } catch (error) {
         console.error('Error deleting pair:', error);
     }
 };
 
 const addPair = async () => {
-    if (wordValue.value || translationValue.value) return
+    if (!wordValue.value || !translationValue.value) return
     const word = wordValue.value.trim().toLowerCase();
     const translation = translationValue.value.trim().toLowerCase();
-
+    console.log(word, translation)
     if (userId.value && word && translation) {
         try {
             const response = await axios.post(`/api/dictionary`, { userId: userId.value, word, translation });
@@ -151,6 +151,7 @@ const addPair = async () => {
 };
 
 const saveEdit = async (item) => {
+    console.log('save')
     try {
         await axios.put(`/api/dictionary/pair`, {
             id: item.id,
@@ -178,10 +179,11 @@ const closeAddMenu = () => {
 // Открыть меню редактирования
 const openEditMenu = () => {
     if (!selectedItem.value) return;
-    console.log(selectedItem.value)
+   
     // Подставляем значения в инпуты
     editWordValue.value = selectedItem.value.word;
     editTranslationValue.value = selectedItem.value.translation;
+    console.log(editWordValue.value, editTranslationValue.value)
     // Показываем меню
     showEditMenu.value = true;
 };
@@ -195,7 +197,8 @@ const closeEditMenu = () => {
 // Нажатие "Готово" при редактировании
 const handleSaveEdit = async () => {
     // Берём текущие значения инпутов и записываем в selectedItem
-    if (!selectedItem.value || editWordValue.length === 0 || editTranslationValue.length === 0) return;
+    console.log(selectedItem.value, editWordValue.value.length, editTranslationValue.value.length)
+    if (!selectedItem.value || editWordValue.value.length === 0 || editTranslationValue.value.length === 0) return;
     selectedItem.value.word = editWordValue.value;
     selectedItem.value.translation = editTranslationValue.value;
 
@@ -215,13 +218,13 @@ const filteredDictionary = computed(() => {
 
 const handleWordClick = (item, event) => {
     selectedItem.value = item;
+    console.log(selectedItem.value)
     showContextMenu.value = true;
     event.stopPropagation();
 };
 
 const hideContextMenu = () => {
     showContextMenu.value = false;
-    selectedItem.value = null;
 };
 
 onMounted(async () => {

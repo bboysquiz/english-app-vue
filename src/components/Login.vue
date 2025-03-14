@@ -113,6 +113,7 @@ const handleLogin = async () => {
     font-size: 13px;
     background-color: #414147;
     outline: none;
+    color: #fff;
 }
 .login-input::placeholder {
     color: #868686;
