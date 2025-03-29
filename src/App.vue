@@ -57,21 +57,11 @@ const logout = async () => {
   height: 8.42vh;
 }
 
-@media screen and (max-width: 767px) {
-  .footer {
-    background-color: #2e2e31;
-    align-items: center;
-    height: 66px;
-  }
+.link > img {
+  filter: brightness(0) invert(0.5);
 }
 
-.footer-img {
-  width: 6vh;
-}
-.link {
-  filter: brightness(0) invert(1);
-}
-.link.router-link-active {
+.link.router-link-active > img {
   filter: none;
 }
 
@@ -92,25 +82,12 @@ const logout = async () => {
   right: 40px;
   z-index: 1;
 }
-@media screen and (max-width: 767px) {
-  .logout-button {
-    width: 40px;
-    height: 40px;
-    top: 50px;
-    right: 17px;
-  }
-}
 .logout-img {
   width: 36px;
   height: 36px;
   color: #fff;
 }
-@media screen and (max-width: 767px) {
-  .logout-img {
-    width: 14.12px;
-    height: 12.12px;
-  }
-}
+
 .footer-img-home {
   width: 6.64vw;
   height: 2.23vh;
@@ -125,5 +102,33 @@ const logout = async () => {
 }
 .link.router-link-active > .footer-link-title{
   color: #fff;
+}
+@media screen and (max-width: 767px) {
+  .footer {
+    background-color: #2e2e31;
+    align-items: center;
+    height: 66px;
+  }
+  .logout-button {
+    width: 40px;
+    height: 40px;
+    top: 50px;
+    right: 17px;
+  }
+  .logout-img {
+    width: 14.12px;
+    height: 12.12px;
+  }
+  .footer-img-home {
+    width: 24px;
+    height: 17px;
+  }
+  .footer-link-title {
+    font-size: 8.7px;
+  }
+  .footer-img-dictionary {
+    width: 14px;
+    height: 17px;
+  }
 }
 </style>

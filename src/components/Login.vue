@@ -154,6 +154,7 @@ const handleLogin = async () => {
 .login-button__img {
     width: 12px;
     height: 12px;
+    filter: brightness(0) invert(1);
 }
 .login-register-button__img {
     width: 13px;

@@ -194,6 +194,7 @@ const handleRegister = async () => {
 .register-login-button__img {
   width: 13px;
   height: 13px;
+  filter: brightness(0) invert(1);
 }
 
 @media screen and (max-width: 767px) {
