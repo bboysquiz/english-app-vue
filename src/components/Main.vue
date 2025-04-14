@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <div class="word-container"
+        <div class="word-container" :class="{'word-container__incorrect': isAnswered && !isAccess}" ref="wordContainer"
             :style="isAnswered && isAccess ? 'background-color: #29513A' : isAnswered && !isAccess ? 'background-color: #6B2525' : ''">
             <div class="word-smile-container">
                 <img :src="smilePath" alt="smile" class="word-smile-img">
@@ -27,8 +27,8 @@
             </div>
 
             <textarea type="text" class="input" v-model="inputValue" placeholder="Input a translation"
-                ref="translateInput" @keydown.enter="handleButtonClick" 
-                :style="isAnswered && isAccess ? 'background-color: #212825;' : isAnswered && !isAccess ? 'background-color: #331212; height: 7.81vh;' : ''" 
+                ref="translateInput" @keydown.enter="handleButtonClick"
+                :style="isAnswered && isAccess ? 'background-color: #212825;' : isAnswered && !isAccess ? 'background-color: #331212; height: 7.81vh;' : ''"
                 autofocus> </textarea>
             <button v-if="!isAnswered" class="button" ref="checkButton" @click="handleButtonClick">
                 <div class="button-content">
@@ -39,24 +39,30 @@
             <div v-else-if="!isAccess" class="incorrect">{{ correctAnswer }}</div>
 
 
-            <button v-if="isAnswered" class="next" :style="isAccess ? 'background-color: #4ABA77;' : 'background-color: #F24E4E;'" @click="handleNextClick" ref="nextButton">
+            <button v-if="isAnswered" class="next"
+                :style="isAccess ? 'background-color: #4ABA77;' : 'background-color: #F24E4E;'" @click="handleNextClick"
+                ref="nextButton">
                 <div class="next-content">
                     <img src="../assets/arrow.svg" alt="arrow" class="next-icon">
                     <div class="next-title">Следующее слово</div>
                 </div>
             </button>
-            <div class="word-statistic" :style="isAccess && isAnswered ? 'border: 1px solid #305F44;' : !isAccess && isAnswered ? 'border: 1px solid #622020;' : ''">
+            <div class="word-statistic"
+                :style="isAccess && isAnswered ? 'border: 1px solid #305F44;' : !isAccess && isAnswered ? 'border: 1px solid #622020;' : ''">
                 <div class="word-statistic-title">Статистика слова</div>
                 <div class="word-stats-container">
-                    <div class="word-rating word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                    <div class="word-rating word-stats"
+                        :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
                         <img src="../assets/word-rating.svg" class="word-rating-img" alt="word-rating">
                         <span class="word-rating-text word-stats-text">{{ wordRating }}</span>
                     </div>
-                    <div class="word-correct word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                    <div class="word-correct word-stats"
+                        :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
                         <img src="../assets/word-correct.svg" class="word-correct-img" alt="word-correct">
                         <span class="word-correct-text word-stats-text">{{ wordCorrect }}</span>
                     </div>
-                    <div class="word-incorrect word-stats" :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
+                    <div class="word-incorrect word-stats"
+                        :style="isAccess && isAnswered ? 'background-color: #33714D;' : !isAccess && isAnswered ? 'background-color: #762B2B;' : ''">
                         <img src="../assets/word-incorrect.svg" class="word-incorrect-img" alt="word-incorrect">
                         <span class="word-incorrect-text word-stats-text">{{ wordIncorrect }}</span>
                     </div>
@@ -130,6 +136,8 @@ const randomSmile = Math.floor(Math.random() * 12) + 1;
 const username = ref('');
 const userId = ref('')
 
+const wordContainer = ref(null);
+
 // Вычисляемое свойство для отображаемого слова
 const displayedWord = computed(() => {
     // Если выбран режим en — показываем английское слово,
@@ -148,16 +156,17 @@ const smilePath = computed(() => {
     const smileFolder = !isAnswered.value
         ? 'question-smiles'
         : isAccess.value
-        ? 'access-smiles'
-        : 'fail-smiles';
+            ? 'access-smiles'
+            : 'fail-smiles';
 
     return new URL(`../assets/smiles/${smileFolder}/smile-${randomSmile}.svg`, import.meta.url).href;
 });
 
 const smileFolder = computed(() => {
-  if (!isAnswered.value) return 'question-smiles';
-  return isAccess.value ? 'access-smiles' : 'fail-smiles';
+    if (!isAnswered.value) return 'question-smiles';
+    return isAccess.value ? 'access-smiles' : 'fail-smiles';
 });
+
 
 const handleButtonClick = async () => {
     if (!checkingTranslationStatus.value) {
@@ -377,6 +386,7 @@ onMounted(async () => {
     await fetchWord();
     await fetchStats();
     gsap.set(indicator.value, { left: '0%' });
+
 })
 </script>
 <style scoped>
@@ -395,6 +405,7 @@ onMounted(async () => {
     justify-content: flex-start;
     padding-left: 40px;
 }
+
 @media screen and (max-width: 767px) {
     .language-switcher-container {
         margin-top: 50px;
@@ -413,12 +424,13 @@ onMounted(async () => {
     font-size: 44px;
     border-radius: 65px;
 }
-@media screen and (max-width: 768px ) {
+
+@media screen and (max-width: 768px) {
     .switcher {
         width: 119px;
         height: 40px;
         font-size: 14.29px;
-    }    
+    }
 }
 
 .switcher-option {
@@ -448,6 +460,7 @@ onMounted(async () => {
     border-radius: 65px;
     border: 7px solid #56565E;
 }
+
 @media screen and (max-width: 767px) {
     .switcher-indicator {
         height: 100%;
@@ -468,6 +481,7 @@ onMounted(async () => {
     margin-top: 0.83vh;
     color: #fff;
 }
+
 @media screen and (max-width: 767px) {
     .incorrect {
         height: 45px;
@@ -487,6 +501,7 @@ onMounted(async () => {
     margin-top: 7.42vh;
     height: 198px;
 }
+
 @media screen and (max-width: 767px) {
     .word {
         margin-top: 47px;
@@ -519,6 +534,7 @@ onMounted(async () => {
     outline: none !important;
     border-radius: 30px;
 }
+
 @media screen and (max-width: 767px) {
     .next {
         height: 52px;
@@ -593,6 +609,7 @@ onMounted(async () => {
     background-color: #fff;
     box-sizing: border-box;
 }
+
 @media screen and (max-width: 767px) {
     .stats-img {
         width: 20px;
@@ -618,11 +635,13 @@ onMounted(async () => {
     width: calc(100% - 80px);
     margin-top: 1.67vh;
 }
+
 @media screen and (max-width: 767px) {
     .stats {
         width: calc(100% - 34px);
     }
 }
+
 .word-statistic {
     width: calc(100% - 60px);
     display: flex;
@@ -657,6 +676,7 @@ onMounted(async () => {
     box-sizing: border-box;
     padding: 18px 20px 12px 19px;
 }
+
 @media screen and (max-width: 767px) {
     .word-stats {
         width: 51px;
@@ -678,6 +698,7 @@ onMounted(async () => {
         font-size: 15px;
     }
 }
+
 .loader-container {
     display: flex;
     justify-content: center;
@@ -703,6 +724,7 @@ onMounted(async () => {
     width: 93.72px;
     height: 93.72px;
 }
+
 @media screen and (max-width: 767px) {
     .word-smile-img {
         width: 33px;
@@ -724,6 +746,7 @@ onMounted(async () => {
     top: 0px;
     transform: translateY(-50%);
 }
+
 @media screen and (max-width: 767px) {
     .word-smile-container {
         border: 9px solid #0A0A0A;
@@ -742,7 +765,33 @@ onMounted(async () => {
     position: relative;
     padding-bottom: 30px;
     border-radius: 50px;
-    transition: 1s ease-in-out;
+    transition: .5s ease-in-out;
+    max-height: 336px;
+    clip-path: rect(-55px 100% 100% 0px);
+    animation: editHeightDown .5s
+}
+.word-container__incorrect {
+    max-height: 391px;
+    clip-path: rect(-55px 100% 100% 0px);
+    animation: editHeightUp .5s
+}
+@keyframes editHeightUp {
+    0% {
+        clip-path: rect(-55px 100% 336px 0px);
+    }
+    100% {
+        clip-path: rect(-55px 100% 100% 0px);
+    }
+}
+@keyframes editHeightDown {
+    0% {
+        clip-path: rect(-55px 100% 391px 0px);
+        height: 391px;
+    }
+    100% {
+        clip-path: rect(-55px 100% 100% 0px);
+        height: 336px;
+    }
 }
 @media screen and (max-width: 767px) {
     .word-container {
@@ -761,7 +810,7 @@ onMounted(async () => {
 }
 
 @media screen and (max-width: 767px) {
-    .button-content > img {
+    .button-content>img {
         width: 13px;
         height: 13px;
     }
@@ -778,6 +827,7 @@ onMounted(async () => {
     font-size: 35px;
     width: 10.65vw;
 }
+
 @media screen and (max-width: 767px) {
     .word-statistic-title {
         font-size: 15px;
@@ -789,6 +839,7 @@ onMounted(async () => {
     justify-content: space-between;
     width: 45.53vw;
 }
+
 @media screen and (max-width: 767px) {
     .word-stats-container {
         width: 163px;
@@ -802,12 +853,14 @@ onMounted(async () => {
     justify-content: flex-start;
     flex-wrap: wrap;
 }
+
 @media screen and (max-width: 767px) {
     .stats-block-text {
         height: 35px;
         width: 57px;
     }
 }
+
 .stats-block {
     width: 28.86vw;
     height: 9.65vh;
@@ -821,6 +874,7 @@ onMounted(async () => {
     padding-left: 25px;
     box-sizing: border-box;
 }
+
 @media screen and (max-width: 767px) {
     .stats-block {
         width: 103px;
@@ -829,6 +883,7 @@ onMounted(async () => {
         padding-left: 10px;
     }
 }
+
 .stats-title {
     font-size: 20px;
     color: #fff;
@@ -836,6 +891,7 @@ onMounted(async () => {
     text-align: left;
     line-height: 20px;
 }
+
 @media screen and (max-width: 767px) {
     .stats-title {
         font-size: 9px;
@@ -847,14 +903,17 @@ onMounted(async () => {
     font-size: 40px;
     color: #fff;
 }
+
 @media screen and (max-width: 767px) {
     .next-title {
         font-size: 17px;
     }
+
     .next-icon {
         height: 13px;
         width: 13px;
     }
+
     .next-content {
         width: 181px;
         display: flex;
@@ -869,11 +928,13 @@ onMounted(async () => {
     .word-rating-img {
         width: 11px;
         height: 13px;
-    } 
+    }
+
     .word-correct-img {
         width: 12px;
         height: 12px;
     }
+
     .word-incorrect-img {
         width: 12px;
         height: 13px;
